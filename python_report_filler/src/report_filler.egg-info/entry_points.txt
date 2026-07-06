@@ -1,0 +1,2 @@
+[console_scripts]
+report-filler = report_filler.cli:main

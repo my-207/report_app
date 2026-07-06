@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>年度检查报告自动填充 - 数字员工</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span class="nav-title">年度检查报告自动填充</span>
+        <span class="badge">数字员工</span>
+      </div>
+      <div class="nav-actions">
+        <span class="nav-mode-badge">子树复制模式</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <div class="container">
+      <!-- 步骤说明 -->
+      <div class="steps-bar">
+        <div class="step active" id="step1-indicator">
+          <div class="step-circle">1</div>
+          <span class="step-label">上传文件</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" id="step2-indicator">
+          <div class="step-circle">2</div>
+          <span class="step-label">数据预览</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" id="step3-indicator">
+          <div class="step-circle">3</div>
+          <span class="step-label">填充打包</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" id="step4-indicator">
+          <div class="step-circle">4</div>
+          <span class="step-label">下载报告</span>
+        </div>
+      </div>
+
+      <!-- 上传区域：三卡片双源模式 -->
+      <div class="upload-section" id="uploadSection">
+        <div class="upload-cards-three">
+          <!-- 卡片1：模板上传 -->
+          <div class="upload-card" id="templateCard">
+            <div class="card-type-badge">必填</div>
+            <div class="upload-dropzone" id="templateDropzone">
+              <div class="upload-icon">
+                <svg viewBox="0 0 48 48" fill="none">
+                  <rect x="6" y="6" width="36" height="36" rx="4" stroke="#2563EB" stroke-width="2" fill="none"/>
+                  <path d="M6 14h36M14 6v8M14 28l8-8 8 8" stroke="#2563EB" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 class="upload-title">📋 Word 模板</h3>
+              <p class="upload-desc">点击或拖拽上传 .docx 模板文件</p>
+              <p class="upload-hint">支持 WPS / Microsoft Word 格式</p>
+              <input type="file" id="templateInput" accept=".docx" hidden>
+            </div>
+            <div class="upload-ready hidden" id="templateReady">
+              <div class="ready-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+              <p class="ready-name" id="templateFileName"></p>
+              <p class="ready-size" id="templateFileSize"></p>
+              <button class="btn-remove" onclick="removeTemplate()" title="移除">✕</button>
+            </div>
+          </div>
+
+          <!-- 卡片2：.rj 知识图谱 -->
+          <div class="upload-card" id="rjCard">
+            <div class="card-type-badge card-badge-purple">可选</div>
+            <div class="upload-dropzone" id="rjDropzone">
+              <div class="upload-icon">
+                <svg viewBox="0 0 48 48" fill="none">
+                  <circle cx="16" cy="14" r="8" stroke="#7C3AED" stroke-width="2"/>
+                  <circle cx="34" cy="32" r="6" stroke="#7C3AED" stroke-width="2"/>
+                  <circle cx="44" cy="10" r="4" stroke="#7C3AED" stroke-width="2"/>
+                  <line x1="22" y1="18" x2="37" y2="8" stroke="#7C3AED" stroke-width="1.5"/>
+                  <line x1="26" y1="28" x2="33" y2="28" stroke="#7C3AED" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <h3 class="upload-title">🕸️ .rj 知识图谱</h3>
+              <p class="upload-desc">点击或拖拽上传知识图谱数据</p>
+              <p class="upload-hint">管道检测知识图谱系统导出</p>
+              <input type="file" id="rjInput" accept=".rj" hidden>
+            </div>
+            <div class="upload-ready hidden" id="rjReady">
+              <div class="ready-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+              <p class="ready-name" id="rjFileName"></p>
+              <p class="ready-size" id="rjFileSize"></p>
+              <button class="btn-remove" onclick="removeRj()" title="移除">✕</button>
+            </div>
+          </div>
+
+          <!-- 卡片3：原始MD.docx -->
+          <div class="upload-card" id="mdCard">
+            <div class="card-type-badge card-badge-teal">可选</div>
+            <div class="upload-dropzone" id="mdDropzone">
+              <div class="upload-icon">
+                <svg viewBox="0 0 48 48" fill="none">
+                  <rect x="4" y="8" width="40" height="32" rx="4" stroke="#0D9488" stroke-width="2" fill="none"/>
+                  <path d="M4 16h40" stroke="#0D9488" stroke-width="2"/>
+                  <circle cx="12" cy="12" r="1.5" fill="#0D9488"/>
+                  <circle cx="17" cy="12" r="1.5" fill="#0D9488"/>
+                  <circle cx="22" cy="12" r="1.5" fill="#0D9488"/>
+                  <path d="M16 26l6-6 6 6" stroke="#0D9488" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M22 20v12" stroke="#0D9488" stroke-width="2"/>
+                </svg>
+              </div>
+              <h3 class="upload-title">📄 原始MD.docx</h3>
+              <p class="upload-desc">点击或拖拽上传原始报告</p>
+              <p class="upload-hint">键值对和签名数据补充源</p>
+              <input type="file" id="mdInput" accept=".docx" hidden>
+            </div>
+            <div class="upload-ready hidden" id="mdReady">
+              <div class="ready-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+              <p class="ready-name" id="mdFileName"></p>
+              <p class="ready-size" id="mdFileSize"></p>
+              <button class="btn-remove" onclick="removeMd()" title="移除">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 模板数据结构A 展示区 — 上传模板后自动分析并展示 -->
+      <section class="template-structure-section hidden" id="templateStructureSection">
+        <div class="ts-header">
+          <h2 class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="9" y1="21" x2="9" y2="9"/>
+            </svg>
+            模板数据结构A
+          </h2>
+          <div class="ts-actions">
+            <span class="ts-meta" id="tsMeta">加载中...</span>
+            <button class="btn btn-sm btn-accent" id="tsSampleFillBtn" onclick="startSampleFill()" disabled title="将样例数据直接填入模板并生成报告">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              使用样例数据填充
+            </button>
+            <button class="btn btn-sm btn-outline" id="tsSampleDownloadBtn" onclick="downloadTemplateSampleData(currentTemplateSessionId())" disabled title="下载含样例值的填充数据JSON">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              下载样例JSON
+            </button>
+            <button class="btn btn-sm btn-outline" id="tsDownloadBtn" onclick="downloadTemplateStructure(currentTemplateSessionId())" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              下载结构JSON
+            </button>
+          </div>
+        </div>
+        <div class="ts-content" id="tsContent"></div>
+        <div class="ts-legend">
+          <span class="ts-legend-item"><span class="ts-dot ts-dot-kv"></span> 键值对表</span>
+          <span class="ts-legend-item"><span class="ts-dot ts-dot-list"></span> 列表型表格</span>
+          <span class="ts-legend-item"><span class="ts-dot ts-dot-sig"></span> 含签名行</span>
+        </div>
+      </section>
+
+      <!-- 数据预览区 -->
+      <section class="preview-section hidden" id="previewSection">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          数据预览
+        </h2>
+        <div class="preview-grid">
+          <div class="preview-card">
+            <h3 class="preview-card-title">基本信息</h3>
+            <div class="preview-basic" id="previewBasic"></div>
+          </div>
+          <div class="preview-card">
+            <h3 class="preview-card-title">表格概览</h3>
+            <div class="preview-tables" id="previewTables"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- .rj 知识图谱 BasicInfo 补充表单 -->
+      <section class="rj-basicinfo-section hidden" id="rjBasicInfoSection">
+        <div class="rj-form-header" onclick="toggleRjForm()">
+          <h2 class="section-title" style="margin-bottom:0; cursor:pointer;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            补充报告基本信息
+          </h2>
+          <span class="rj-form-toggle" id="rjFormToggle">▼</span>
+        </div>
+        <div class="rj-form-body" id="rjFormBody">
+          <p class="rj-form-hint">知识图谱数据不包含报告编号、公司名称、日期等元数据，请手动补充（可选，未填项保留模板原样）</p>
+          <div class="rj-form-grid">
+            <div class="rj-form-field">
+              <label>报告编号</label>
+              <input type="text" id="rjReportNumber" placeholder="如: GGW-2024-03001-2024">
+            </div>
+            <div class="rj-form-field">
+              <label>公司名称</label>
+              <input type="text" id="rjCompanyName" placeholder="如: XX管道有限公司">
+            </div>
+            <div class="rj-form-field">
+              <label>设备/管道名称</label>
+              <input type="text" id="rjDeviceName" placeholder="自动从知识图谱提取">
+            </div>
+            <div class="rj-form-field">
+              <label>报告类型前缀</label>
+              <input type="text" id="rjReportTypePrefix" placeholder="如: GGW">
+            </div>
+            <div class="rj-form-field">
+              <label>检测起始日期</label>
+              <input type="text" id="rjInspectionStartDate" placeholder="如: 2024年6月">
+            </div>
+            <div class="rj-form-field">
+              <label>检测结束日期</label>
+              <input type="text" id="rjInspectionEndDate" placeholder="如: 2024年7月">
+            </div>
+            <div class="rj-form-field">
+              <label>检测人日期</label>
+              <input type="text" id="rjInspectorDate" placeholder="如: 2024年7月15日">
+            </div>
+            <div class="rj-form-field">
+              <label>校对人日期</label>
+              <input type="text" id="rjCheckerDate" placeholder="如: 2024年7月16日">
+            </div>
+            <div class="rj-form-field">
+              <label>审核人日期</label>
+              <input type="text" id="rjReviewerDate" placeholder="如: 2024年7月17日">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="applyBasicInfo()" style="margin-top:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            应用补充信息
+          </button>
+        </div>
+      </section>
+
+      <!-- 操作按钮区 -->
+      <div class="action-section hidden" id="actionSection">
+        <button class="btn btn-primary" id="fillBtn" onclick="startFill()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          提交任务
+        </button>
+        <button class="btn btn-secondary" onclick="resetAll()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          重置
+        </button>
+      </div>
+
+      <!-- 进度区 -->
+      <section class="progress-section hidden" id="progressSection">
+        <div class="progress-steps">
+          <div class="progress-step" id="prog1">
+            <div class="prog-dot"></div>
+            <span>解析数据</span>
+          </div>
+          <div class="prog-connector" id="progLine1"></div>
+          <div class="progress-step" id="prog2">
+            <div class="prog-dot"></div>
+            <span>匹配模板</span>
+          </div>
+          <div class="prog-connector" id="progLine2"></div>
+          <div class="progress-step" id="prog3">
+            <div class="prog-dot"></div>
+            <span>填充打包</span>
+          </div>
+        </div>
+        <p class="progress-hint" id="progressHint">正在解析数据文件...</p>
+        <p class="task-id" id="taskIdDisplay"></p>
+      </section>
+
+      <!-- 结果展示区 -->
+      <section class="result-section hidden" id="resultSection">
+        <div id="resultContent"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/upload.js"></script>
+  <script src="js/preview.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

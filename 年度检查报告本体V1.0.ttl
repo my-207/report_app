@@ -1,0 +1,3910 @@
+@prefix : <http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection-report#> .
+@prefix p: <http://www.semanticweb.org/hongt/ontologies/2026/pipeline/> .
+@prefix air: <http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/> .
+@prefix fac: <http://www.semanticweb.org/hongt/ontologies/2026/facility/> .
+@prefix ins: <http://www.semanticweb.org/hongt/ontologies/2026/inspection/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix per: <http://www.semanticweb.org/hongt/ontologies/2026/person/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix biri: <http://www.semanticweb.org/hongt/ontologies/2026/> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@base <http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection-report#> .
+
+<http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection-report> rdf:type owl:Ontology ;
+                                                                             dcterms:created "2026-06-07"^^xsd:date ;
+                                                                             dcterms:creator "Mavis AI Agent" ;
+                                                                             dcterms:description "本本体定义了管道年度检查报告中涉及的所有实体、属性和关系，支持跨管道类型的数据标准化和知识图谱构建。"@zh ;
+                                                                             rdfs:comment "长输油气管道年度检查报告的本体模型，用于知识图谱提取和数据表示"@zh ;
+                                                                             rdfs:label "年度检查报告本体 V1.0"@zh ;
+                                                                             rdfs:seeAlso biri: ;
+                                                                             owl:versionInfo "1.0" .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/terms/created
+dcterms:created rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/creator
+dcterms:creator rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/description
+dcterms:description rdf:type owl:AnnotationProperty .
+
+
+###  http://qudt.org/schema/qudt/unit
+qudt:unit rdf:type owl:AnnotationProperty .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/审核签名时间
+air:审核签名时间 rdf:type owl:AnnotationProperty .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/批准签名时间
+air:批准签名时间 rdf:type owl:AnnotationProperty .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/校对签名时间
+air:校对签名时间 rdf:type owl:AnnotationProperty .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测签名时间
+air:检测签名时间 rdf:type owl:AnnotationProperty .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/设施类型
+air:设施类型 rdf:type owl:AnnotationProperty ;
+         rdfs:comment "地面装置的具体类型标注（建议通过rdf:type表达具体类型，此属性仅用于标注/兼容）"@zh ;
+         rdfs:label "设施类型"@zh ;
+         rdfs:range owl:Thing ;
+         rdfs:domain air:地面装置 .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/防腐层等级
+air:防腐层等级 rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2001/XMLSchema#minInclusive
+xsd:minInclusive rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Datatypes
+#################################################################
+
+###  http://org.semanticweb.owlapi/error#Error5
+<http://org.semanticweb.owlapi/error#Error5> rdf:type rdfs:Datatype .
+
+
+###  http://org.semanticweb.owlapi/error#Error6
+<http://org.semanticweb.owlapi/error#Error6> rdf:type rdfs:Datatype .
+
+
+###  http://www.w3.org/2001/XMLSchema#date
+xsd:date rdf:type rdfs:Datatype .
+
+
+###  http://www.w3.org/2001/XMLSchema#gYear
+xsd:gYear rdf:type rdfs:Datatype .
+
+
+###  http://www.w3.org/2001/XMLSchema#gYearMonth
+xsd:gYearMonth rdf:type rdfs:Datatype .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/位于管道
+air:位于管道 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:range air:管道 ;
+         rdfs:comment "设施所在的管道"@zh ;
+         rdfs:label "位于管道"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/包含检查项目
+air:包含检查项目 rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf owl:topObjectProperty ;
+           rdfs:domain air:年度检查报告 ;
+           rdfs:range owl:Thing ;
+           rdfs:label "包含检查项目"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/地质灾害类型
+air:地质灾害类型 rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf owl:topObjectProperty ;
+           rdfs:domain air:地质条件调查 ;
+           rdfs:range air:地质灾害类型 .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/安全管理人员
+air:安全管理人员 rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf owl:topObjectProperty ;
+           rdfs:domain air:使用单位 ;
+           rdfs:range air:人员 ;
+           rdfs:label "安全管理人员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/审核人员
+air:审核人员 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain owl:Thing ;
+         rdfs:range air:人员 ;
+         rdfs:comment "审核报告的人员"@zh ;
+         rdfs:label "审核人员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/审核签名
+air:审核签名 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range air:审核员 ;
+         rdfs:comment "审核人员签名，含时间"@zh ;
+         rdfs:label "审核签名"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/归属单位
+air:归属单位 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range air:使用单位 ;
+         rdfs:comment "管道所属的使用单位"@zh ;
+         rdfs:label "归属单位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/所属单位
+air:所属单位 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:人员 ;
+         rdfs:range air:使用单位 ;
+         rdfs:comment "人员所属的工作单位"@zh ;
+         rdfs:label "所属单位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/所属检查项签名
+air:所属检查项签名 rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf owl:topObjectProperty ;
+            rdfs:domain air:资料审查 ;
+            rdfs:range air:检查项签名 ;
+            rdfs:comment "关联该检查项的签名块（检测+校对或检测+审核）"@zh ;
+            rdfs:label "所属检查项签名"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/所属管道
+air:所属管道 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range air:管道 ;
+         rdfs:comment "报告所检测的管道"@zh ;
+         rdfs:label "所属管道"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/批准人员
+air:批准人员 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range air:人员 ,
+                    air:批准人 ;
+         rdfs:comment "批准报告的人员"@zh ,
+                      "报告批准人（关联年度检查报告的封面结论页）"@zh ;
+         rdfs:label "批准人员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/批准签名
+air:批准签名 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range air:批准人 ;
+         rdfs:comment "批准人签名，含时间"@zh ;
+         rdfs:label "批准签名"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/校对签名
+air:校对签名 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range air:校对员 ;
+         rdfs:comment "校对人员签名，含时间"@zh ;
+         rdfs:label "校对签名"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查签名人
+air:检查签名人 rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf owl:topObjectProperty ;
+          rdfs:domain air:年度检查报告 ;
+          rdfs:range air:检验员 ;
+          rdfs:comment "报告封面结论页的检查签署人（检验员角色）"@zh ;
+          rdfs:label "检查签名人"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查结论
+air:检查结论 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range air:检查结论 .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查项审核员
+air:检查项审核员 rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf owl:topObjectProperty ;
+           rdfs:domain air:检查项签名 ;
+           rdfs:range air:审核员 ;
+           rdfs:comment "该检查项的审核人员（专项检测章节）"@zh ;
+           rdfs:label "检查项审核员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查项校对员
+air:检查项校对员 rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf owl:topObjectProperty ;
+           rdfs:domain air:检查项签名 ;
+           rdfs:range air:校对员 ;
+           rdfs:comment "该检查项的校对人员（基础章节）"@zh ;
+           rdfs:label "检查项校对员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查项检测人
+air:检查项检测人 rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf owl:topObjectProperty ;
+           rdfs:domain air:检查项签名 ;
+           rdfs:range air:检测员 ;
+           rdfs:comment "该检查项的检测操作人员"@zh ;
+           rdfs:label "检查项检测人"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测人员
+air:检测人员 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain owl:Thing ;
+         rdfs:range air:人员 ;
+         rdfs:comment "执行检测的人员"@zh ;
+         rdfs:label "检测人员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测签名
+air:检测签名 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range air:检测员 ;
+         rdfs:comment "检测人员签名，含时间"@zh ;
+         rdfs:label "检测签名"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越方式
+air:穿越方式 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:穿越段 ;
+         rdfs:range air:穿越方式 .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管理单位
+air:管理单位 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range air:使用单位 ;
+         rdfs:comment "管道管理单位（区别于使用单位/注册单位）"@zh ;
+         rdfs:label "管理单位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/编制签名
+air:编制签名 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range air:编制人 ;
+         rdfs:comment "编制人签名，含时间"@zh ;
+         rdfs:label "编制签名"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/设施状态
+air:设施状态 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:地面装置 ;
+         rdfs:range air:设施状态 .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阀室类型
+air:阀室类型 rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdfs:domain air:阀室 ;
+         rdfs:range air:阀室类型 .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/上次检验报告编号
+air:上次检验报告编号 rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf owl:topDataProperty ;
+             rdfs:domain air:管道 ;
+             rdfs:range xsd:string ;
+             rdfs:label "上次检验报告编号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/上次检验日期
+air:上次检验日期 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:管道 ;
+           rdfs:range xsd:date ;
+           rdfs:label "上次检验日期"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/事件发生位置
+air:事件发生位置 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:资料审查事件记载 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "事件发生位置（桩号+偏移量）"@zh ;
+           rdfs:label "事件发生位置"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/事件发生时间
+air:事件发生时间 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:资料审查事件记载 ;
+           rdfs:range xsd:date ;
+           rdfs:comment "管道运行期间发生的事件时间"@zh ;
+           rdfs:label "事件发生时间"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/事件类型
+air:事件类型 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:资料审查事件记载 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "事件类型，如外腐蚀穿孔、内腐蚀穿孔、环焊缝开裂、螺旋焊缝开裂等"@zh ;
+         rdfs:label "事件类型"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/事件详细描述
+air:事件详细描述 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:资料审查事件记载 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "事件起因和过程的详细描述"@zh ;
+           rdfs:label "事件详细描述"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流干扰电压最大值
+air:交流干扰电压最大值 rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf owl:topDataProperty ;
+              rdfs:domain air:交流干扰防护数据 ;
+              rdfs:range xsd:double ;
+              qudt:unit unit:V ;
+              rdfs:comment "交流干扰电压最大值，单位：伏特(V)"@zh ;
+              rdfs:label "交流干扰电压最大值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流干扰电压最小值
+air:交流干扰电压最小值 rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf owl:topDataProperty ;
+              rdfs:domain air:交流干扰防护数据 ;
+              rdfs:range xsd:double ;
+              qudt:unit unit:V ;
+              rdfs:comment "交流干扰电压最小值，单位：伏特(V)"@zh ;
+              rdfs:label "交流干扰电压最小值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流排流量
+air:交流排流量 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:交流干扰防护数据 ;
+          rdfs:range xsd:double ;
+          qudt:unit unit:A ;
+          rdfs:comment "交流排流量，单位：安培(A)"@zh ;
+          rdfs:label "交流排流量"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压平均值
+air:交流电压平均值 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:交流电压测试数据 ;
+            rdfs:range xsd:double ;
+            qudt:unit unit:V ;
+            rdfs:comment "交流干扰电压平均值，单位：伏特(V)"@zh ;
+            rdfs:label "交流电压平均值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压最大值
+air:交流电压最大值 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:交流电压测试数据 ;
+            rdfs:range xsd:double ;
+            qudt:unit unit:V ;
+            rdfs:comment "交流干扰电压最大值，单位：伏特(V)"@zh ;
+            rdfs:label "交流电压最大值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压最小值
+air:交流电压最小值 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:交流电压测试数据 ;
+            rdfs:range xsd:double ;
+            qudt:unit unit:V ;
+            rdfs:comment "交流干扰电压最小值，单位：伏特(V)"@zh ;
+            rdfs:label "交流电压最小值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电流密度平均值
+air:交流电流密度平均值 rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf owl:topDataProperty ;
+              rdfs:domain air:交流电压测试数据 ;
+              rdfs:range xsd:double ;
+              qudt:unit unit:A_PER_M2 ;
+              rdfs:comment "交流电流密度平均值，单位：安培/平方米(A/m²)"@zh ;
+              rdfs:label "交流电流密度平均值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电流密度最大值
+air:交流电流密度最大值 rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf owl:topDataProperty ;
+              rdfs:domain air:交流电压测试数据 ;
+              rdfs:range xsd:double ;
+              qudt:unit unit:A_PER_M2 ;
+              rdfs:comment "交流电流密度最大值，单位：安培/平方米(A/m²)"@zh ;
+              rdfs:label "交流电流密度最大值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电流密度最小值
+air:交流电流密度最小值 rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf owl:topDataProperty ;
+              rdfs:domain air:交流电压测试数据 ;
+              rdfs:range xsd:double ;
+              qudt:unit unit:A_PER_M2 ;
+              rdfs:comment "交流电流密度最小值，单位：安培/平方米(A/m²)"@zh ;
+              rdfs:label "交流电流密度最小值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/位置
+air:位置 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:range xsd:string ;
+       rdfs:comment "设施的位置或桩号"@zh ;
+       rdfs:label "位置"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/使用年限
+air:使用年限 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:integer ;
+         rdfs:label "使用年限"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/使用登记证编号
+air:使用登记证编号 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:管道 ;
+            rdfs:range xsd:string ;
+            rdfs:comment "压力管道使用登记证编号"@zh ;
+            rdfs:label "使用登记证编号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/保护侧电位
+air:保护侧电位 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:绝缘装置测试数据 ;
+          rdfs:range xsd:double ;
+          qudt:unit unit:V ;
+          rdfs:comment "绝缘装置保护侧管地电位，单位：伏特(V)"@zh ;
+          rdfs:label "保护侧电位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/修复材料
+air:修复材料 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:防腐层检查 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "防腐层修复使用的材料，如粘弹体防腐胶带+聚丙烯增强纤维胶带"@zh ;
+         rdfs:label "修复材料"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/偏移距离
+air:偏移距离 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:地面装置 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:M ;
+         rdfs:comment "设施相对于原位置的偏移距离，单位：米(m)"@zh ;
+         rdfs:label "偏移距离"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/剩余壁厚
+air:剩余壁厚 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:壁厚测定 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:MM ;
+         rdfs:comment "缺陷处剩余壁厚，单位：毫米(mm)"@zh ;
+         rdfs:label "剩余壁厚"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/单位名称
+air:单位名称 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:使用单位 ;
+         rdfs:range xsd:string ;
+         rdfs:label "单位名称"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/单位地址
+air:单位地址 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:使用单位 ;
+         rdfs:range xsd:string ;
+         rdfs:label "单位地址"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/占压终点
+air:占压终点 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:防护带占压数据 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "占压终点桩号"@zh ;
+         rdfs:label "占压终点"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/占压终点坐标
+air:占压终点坐标 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:防护带占压数据 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "占压终点经纬度坐标"@zh ;
+           rdfs:label "占压终点坐标"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/占压终点埋深
+air:占压终点埋深 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:防护带占压数据 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:M ;
+           rdfs:comment "占压终点埋深，单位：米(m)"@zh ;
+           rdfs:label "占压终点埋深"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/占压起点
+air:占压起点 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:防护带占压数据 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "占压起点桩号"@zh ;
+         rdfs:label "占压起点"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/占压起点坐标
+air:占压起点坐标 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:防护带占压数据 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "占压起点经纬度坐标"@zh ;
+           rdfs:label "占压起点坐标"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/占压起点埋深
+air:占压起点埋深 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:防护带占压数据 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:M ;
+           rdfs:comment "占压起点埋深，单位：米(m)"@zh ;
+           rdfs:label "占压起点埋深"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/占压长度
+air:占压长度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:防护带占压数据 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:M ;
+         rdfs:comment "占压长度，单位：米(m)"@zh ;
+         rdfs:label "占压长度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/压力管道代码
+air:压力管道代码 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:管道 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "压力管道代码"@zh ;
+           rdfs:label "压力管道代码"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/压力管道品种
+air:压力管道品种 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:管道 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "压力管道品种，如GA1、GA2"@zh ;
+           rdfs:label "压力管道品种"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/压力管道类别
+air:压力管道类别 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:管道 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "压力管道类别，如\"长输管道\""@zh ;
+           rdfs:label "压力管道类别"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/压力管道编号
+air:压力管道编号 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:管道 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "压力管道编号/注册代码"@zh ;
+           rdfs:label "压力管道编号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/原因
+air:原因 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain air:资料审查事件记载 ;
+       rdfs:range xsd:string ;
+       rdfs:comment "事件发生的原因，如管线迁移、施工损坏等"@zh ;
+       rdfs:label "原因"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/周向宽度
+air:周向宽度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:壁厚测定 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:MM ;
+         rdfs:comment "缺陷的周向宽度，单位：毫米(mm)"@zh ;
+         rdfs:label "周向宽度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/土壤电阻率
+air:土壤电阻率 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:牺牲阳极参数 ;
+          rdfs:range xsd:double ;
+          qudt:unit unit:OHM_M ;
+          rdfs:comment "阳极埋设处土壤电阻率，单位：欧姆·米(Ω·m)"@zh ;
+          rdfs:label "土壤电阻率"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/地质灾害位置
+air:地质灾害位置 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:地质条件调查 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "地质灾害位置，可根据测试桩长度确定或根据GPS坐标定点"@zh ;
+           rdfs:label "地质灾害位置"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/埋深
+air:埋深 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:range xsd:double ;
+       qudt:unit unit:M ;
+       rdfs:comment "管道或设施的埋深，单位：米(m)"@zh ;
+       rdfs:label "埋深"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/壁厚
+air:壁厚 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain air:管道 ;
+       rdfs:range xsd:double ;
+       qudt:unit unit:MM ;
+       rdfs:comment "管道壁厚，单位：毫米(mm)"@zh ;
+       rdfs:label "壁厚"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/备注
+air:备注 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain owl:Thing ;
+       rdfs:range xsd:string ;
+       rdfs:label "备注"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/外径
+air:外径 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain air:管道 ;
+       rdfs:range xsd:double ;
+       qudt:unit unit:MM ;
+       rdfs:comment "管道外径，单位：毫米(mm)"@zh ;
+       rdfs:label "外径"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/姓名
+air:姓名 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain air:人员 ;
+       rdfs:range xsd:string ;
+       rdfs:label "姓名"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/安装单位
+air:安装单位 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:label "安装单位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/完整性评价结论
+air:完整性评价结论 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:完整性评价 ;
+            rdfs:range xsd:string ;
+            rdfs:comment "管道完整性评价结论，如\"未发现需要立即维修的金属损失\""@zh ;
+            rdfs:label "完整性评价结论"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/宏观描述
+air:宏观描述 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:宏观检查 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "宏观检查中桩号位置的地面环境描述"@zh ;
+         rdfs:label "宏观描述"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/工作介质
+air:工作介质 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "管道工作介质，与设计介质不同，如\"天然气\""@zh ;
+         rdfs:label "工作介质"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/恒电位仪运行状态
+air:恒电位仪运行状态 rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf owl:topDataProperty ;
+             rdfs:domain air:恒电位仪参数 ;
+             rdfs:range xsd:string ;
+             rdfs:label "恒电位仪运行状态"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/执业证号
+air:执业证号 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:人员 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "人员的检验资质证书编号，如TSGRxxxx-xxxx"@zh ;
+         rdfs:label "执业证号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/投用日期
+air:投用日期 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:gYear ;
+         rdfs:label "投用日期"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/报告依据
+air:报告依据 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range xsd:string ;
+         rdfs:label "报告依据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/报告编号
+air:报告编号 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "年度检查报告的唯一编号"@zh ;
+         rdfs:label "报告编号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/排流器类型
+air:排流器类型 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:交流干扰防护数据 ;
+          rdfs:range xsd:string ;
+          rdfs:comment "交流排流器类型"@zh ;
+          rdfs:label "排流器类型"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/排流方式
+air:排流方式 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:直流干扰防护数据 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "直流排流方式，如强制排流、接地排流等"@zh ;
+         rdfs:label "排流方式"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/排流站编号
+air:排流站编号 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:直流干扰防护数据 ;
+          rdfs:range xsd:string ;
+          rdfs:comment "排流站编号"@zh ;
+          rdfs:label "排流站编号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/控制范围
+air:控制范围 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:直流干扰防护数据 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "直流排流的控制范围"@zh ;
+         rdfs:label "控制范围"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/描述
+air:描述 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain owl:Thing ;
+       rdfs:range xsd:string ;
+       rdfs:label "描述"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/操作压力
+air:操作压力 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:MEGA_PA ;
+         rdfs:comment "管道操作压力，单位：兆帕(MPa)"@zh ;
+         rdfs:label "操作压力"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/操作温度
+air:操作温度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:DEG_C ;
+         rdfs:label "操作温度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/敷设方式
+air:敷设方式 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:label "敷设方式"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/施工及验收规范
+air:施工及验收规范 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:管道 ;
+            rdfs:range xsd:string ;
+            rdfs:label "施工及验收规范"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查依据
+air:检查依据 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "检验依据的标准规范，如TSGR 7004、GB/T 30582等"@zh ;
+         rdfs:label "检查依据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查签名时间
+air:检查签名时间 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:年度检查报告 ;
+           rdfs:range xsd:date ;
+           rdfs:comment "报告封面结论页的检查时间"@zh ;
+           rdfs:label "检查签名时间"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查项审核时间
+air:检查项审核时间 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:年度检查报告 ,
+                        air:检查项签名 ;
+            rdfs:range xsd:date ;
+            rdfs:comment "单个检查项的审核完成时间（专项检测章节适用）"@zh ,
+                         "审核人员签名的日期"@zh ;
+            rdfs:label "审核签名时间"@zh ,
+                       "检查项审核时间"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查项批准时间
+air:检查项批准时间 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:年度检查报告 ,
+                        air:检查项签名 ;
+            rdfs:range xsd:date ;
+            rdfs:comment "单个检查项的批准时间"@zh ,
+                         "批准人签名的日期"@zh ;
+            rdfs:label "批准签名时间"@zh ,
+                       "检查项批准时间"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查项校对时间
+air:检查项校对时间 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:年度检查报告 ,
+                        air:检查项签名 ;
+            rdfs:range xsd:date ;
+            rdfs:comment "单个检查项的校对完成时间（基础章节适用）"@zh ,
+                         "校对人员签名的日期"@zh ;
+            rdfs:label "校对签名时间"@zh ,
+                       "检查项校对时间"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查项检测时间
+air:检查项检测时间 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:年度检查报告 ,
+                        air:检查项签名 ;
+            rdfs:range xsd:date ;
+            rdfs:comment "单个检查项的检测完成时间（区别于报告封面结论页的air:检测签名时间）"@zh ,
+                         "检测人员签名的日期"@zh ;
+            rdfs:label "检查项检测时间"@zh ,
+                       "检测签名时间"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测位置
+air:检测位置 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:电位测试数据 ;
+         rdfs:range xsd:string ;
+         rdfs:label "检测位置"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测指标
+air:检测指标 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:防腐层质量检测数据 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "防腐层检测指标类型：电阻率(Rg)、电流衰减率(Y)或防腐层等级，三选一"@zh ;
+         rdfs:label "检测指标"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测日期
+air:检测日期 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain owl:Thing ;
+         rdfs:range xsd:date ;
+         rdfs:label "检测日期"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测管段
+air:检测管段 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:防腐层质量检测数据 ;
+         rdfs:range xsd:string ;
+         rdfs:label "检测管段"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测管段长度
+air:检测管段长度 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:防腐层质量检测数据 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:KM ;
+           rdfs:comment "防腐层检测的管段长度，单位：千米(km)"@zh ;
+           rdfs:label "检测管段长度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检验日期
+air:检验日期 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range xsd:date ;
+         rdfs:label "检验日期"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检验类别
+air:检验类别 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range xsd:string ;
+         rdfs:label "检验类别"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护终点桩号
+air:水工保护终点桩号 rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf owl:topDataProperty ;
+             rdfs:domain air:水工保护设施 ;
+             rdfs:range xsd:string ;
+             rdfs:label "水工保护终点桩号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护起点桩号
+air:水工保护起点桩号 rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf owl:topDataProperty ;
+             rdfs:domain air:水工保护设施 ;
+             rdfs:range xsd:string ;
+             rdfs:label "水工保护起点桩号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护长度
+air:水工保护长度 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:水工保护设施 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:M ;
+           rdfs:comment "水工保护设施的长度，单位：米(m)"@zh ;
+           rdfs:label "水工保护长度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/法兰位置
+air:法兰位置 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:绝缘装置测试数据 ;
+         rdfs:range xsd:string ;
+         rdfs:label "法兰位置"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/浅埋最深埋深
+air:浅埋最深埋深 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:浅埋数据 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:M ;
+           rdfs:comment "浅埋区段最浅埋深，单位：米(m)"@zh ;
+           rdfs:label "浅埋最深埋深"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/浅埋长度
+air:浅埋长度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:浅埋数据 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:M ;
+         rdfs:comment "浅埋区段长度，单位：米(m)"@zh ;
+         rdfs:label "浅埋长度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/测试类型
+air:测试类型 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:绝缘装置测试数据 ;
+         rdfs:range xsd:string ;
+         rdfs:label "测试类型"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/漏点值
+air:漏点值 rdf:type owl:DatatypeProperty ;
+        rdfs:subPropertyOf owl:topDataProperty ;
+        rdfs:domain air:防腐层质量检测数据 ;
+        rdfs:range xsd:double ;
+        qudt:unit unit:DB ;
+        rdfs:comment "防腐层漏点检测值，单位：分贝(dB)"@zh ;
+        rdfs:label "漏点值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/漏点情况描述
+air:漏点情况描述 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:防腐层质量检测数据 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "漏点所处环境描述，如'位于农田'、'公路边'等"@zh ;
+           rdfs:label "漏点情况描述"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/漏点维修记录
+air:漏点维修记录 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:防腐层质量检测数据 ;
+           rdfs:range xsd:string ;
+           rdfs:comment "漏点维修记录，如'未维修'、'已维修'、'密切关注'"@zh ;
+           rdfs:label "漏点维修记录"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/环境描述
+air:环境描述 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:range xsd:string ;
+         rdfs:label "环境描述"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位平均值
+air:电位平均值 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:电位测试数据 ;
+          rdfs:range xsd:double ;
+          qudt:unit unit:V ;
+          rdfs:comment "管地电位测试的平均值，单位：伏特(V)"@zh ;
+          rdfs:label "电位平均值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位最正值
+air:电位最正值 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:电位测试数据 ;
+          rdfs:range xsd:double ;
+          qudt:unit unit:V ;
+          rdfs:comment "管地电位测试的最正值，单位：伏特(V)"@zh ;
+          rdfs:label "电位最正值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位最负值
+air:电位最负值 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:电位测试数据 ;
+          rdfs:range xsd:double ;
+          qudt:unit unit:V ;
+          rdfs:comment "管地电位测试的最负值，单位：伏特(V)"@zh ;
+          rdfs:label "电位最负值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电流衰减率
+air:电流衰减率 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:防腐层质量检测数据 ;
+          rdfs:range xsd:double ;
+          rdfs:comment "防腐层电流衰减率(Y值)"@zh ;
+          rdfs:label "电流衰减率"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电阻率
+air:电阻率 rdf:type owl:DatatypeProperty ;
+        rdfs:subPropertyOf owl:topDataProperty ;
+        rdfs:domain air:防腐层质量检测数据 ;
+        rdfs:range xsd:double ;
+        qudt:unit unit:OHM_M ;
+        rdfs:comment "防腐层电阻率，单位：欧姆·米(Ω·m)"@zh ;
+        rdfs:label "电阻率"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/直流排流电流
+air:直流排流电流 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:直流干扰防护数据 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:A ;
+           rdfs:comment "直流排流电流，单位：安培(A)"@zh ;
+           rdfs:label "直流排流电流"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/破损点密度
+air:破损点密度 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:防腐层质量检测数据 ;
+          rdfs:range xsd:double ;
+          rdfs:comment "防腐层破损点密度(P值)，单位：个/千米"@zh ;
+          rdfs:label "破损点密度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越段名称
+air:穿越段名称 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:穿越段 ;
+          rdfs:range xsd:string ;
+          rdfs:comment "穿越的河流、铁路或公路名称"@zh ;
+          rdfs:label "穿越段名称"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越终点
+air:穿越终点 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:穿越段 ;
+         rdfs:range xsd:string ;
+         rdfs:label "穿越终点"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越起点
+air:穿越起点 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:穿越段 ;
+         rdfs:range xsd:string ;
+         rdfs:label "穿越起点"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越长度
+air:穿越长度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:穿越段 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:M ;
+         rdfs:comment "穿越段的长度，单位：米(m)"@zh ;
+         rdfs:label "穿越长度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/站场
+air:站场 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain air:恒电位仪参数 ;
+       rdfs:range xsd:string ;
+       rdfs:label "站场"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/站场阀室
+air:站场阀室 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:绝缘装置测试数据 ;
+         rdfs:range xsd:string ;
+         rdfs:label "站场/阀室"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/竣工时间
+air:竣工时间 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:资料审查 ;
+         rdfs:range xsd:date ;
+         rdfs:comment "管道竣工时间/投用日期"@zh ;
+         rdfs:label "竣工时间"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管地电位排流停
+air:管地电位排流停 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:直流干扰防护数据 ;
+            rdfs:range xsd:double ;
+            qudt:unit unit:V ;
+            rdfs:comment "排流停止时管地电位，单位：伏特(V)"@zh ;
+            rdfs:label "管地电位排流停"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管地电位排流通
+air:管地电位排流通 rdf:type owl:DatatypeProperty ;
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain air:直流干扰防护数据 ;
+            rdfs:range xsd:double ;
+            qudt:unit unit:V ;
+            rdfs:comment "排流开通时管地电位，单位：伏特(V)"@zh ;
+            rdfs:label "管地电位排流通"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管地电位最大
+air:管地电位最大 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:直流干扰防护数据 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:V ;
+           rdfs:comment "管地电位最大（最正）值，单位：伏特(V)"@zh ;
+           rdfs:label "管地电位最大"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管地电位最小
+air:管地电位最小 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:直流干扰防护数据 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:V ;
+           rdfs:comment "管地电位最小（最负）值，单位：伏特(V)"@zh ;
+           rdfs:label "管地电位最小"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管道名称
+air:管道名称 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "管道的名称"@zh ;
+         rdfs:label "管道名称"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管道材质
+air:管道材质 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "管道材质，如X70、L485、L360"@zh ;
+         rdfs:label "管道材质"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管道级别
+air:管道级别 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "管道级别，如GA1"@zh ;
+         rdfs:label "管道级别"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管道编号
+air:管道编号 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:label "管道编号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管道规格
+air:管道规格 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "管道的规格，如Φ1016×14.6mm"@zh ;
+         rdfs:label "管道规格"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管道长度
+air:管道长度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range <http://org.semanticweb.owlapi/error#Error5> ,
+                    xsd:double ;
+         qudt:unit unit:KM ;
+         rdfs:comment "管道总长度，单位：千米(km)"@zh ;
+         rdfs:label "管道长度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/纬度
+air:纬度 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:range xsd:double ;
+       qudt:unit unit:DEG ;
+       rdfs:comment "设施位置的纬度坐标"@zh ;
+       rdfs:label "纬度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/终点埋深
+air:终点埋深 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:穿越段 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:M ;
+         rdfs:comment "穿越段终点的管道埋深，单位：米(m)"@zh ;
+         rdfs:label "终点埋深"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/终点电流值
+air:终点电流值 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:穿越段 ;
+          rdfs:range xsd:double ;
+          qudt:unit unit:MA ;
+          rdfs:comment "穿越段终点的电流值，单位：毫安(mA)"@zh ;
+          rdfs:label "终点电流值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/经度
+air:经度 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:range xsd:double ;
+       qudt:unit unit:DEG ;
+       rdfs:comment "设施位置的经度坐标"@zh ;
+       rdfs:label "经度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/维修建议
+air:维修建议 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:完整性评价 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "完整性评价后的维修建议"@zh ;
+         rdfs:label "维修建议"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/维修管段起止桩号
+air:维修管段起止桩号 rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf owl:topDataProperty ;
+             rdfs:domain air:防腐层检查 ;
+             rdfs:range xsd:string ;
+             rdfs:comment "防腐层维修管段的起止桩号"@zh ;
+             rdfs:label "维修管段起止桩号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/维修长度
+air:维修长度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:防腐层检查 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:KM ;
+         rdfs:comment "防腐层维修管段长度，单位：公里(km)"@zh ;
+         rdfs:label "维修长度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/编制签名时间
+air:编制签名时间 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:年度检查报告 ;
+           rdfs:range xsd:date ;
+           rdfs:comment "编制人签名的日期"@zh ;
+           rdfs:label "编制签名时间"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/缺陷尺寸
+air:缺陷尺寸 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:壁厚测定 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:MM ;
+         rdfs:comment "缺陷尺寸（长度×宽度），单位：毫米(mm)"@zh ;
+         rdfs:label "缺陷尺寸"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/缺陷类型
+air:缺陷类型 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:壁厚测定 ;
+         rdfs:range xsd:string ;
+         rdfs:label "缺陷类型"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/职称
+air:职称 rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain air:人员 ;
+       rdfs:range xsd:string ;
+       rdfs:comment "人员的专业技术职称，如高级工程师、工程师等"@zh ;
+       rdfs:label "职称"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/联系电话
+air:联系电话 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:使用单位 ;
+         rdfs:range xsd:string ;
+         rdfs:label "联系电话"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/记录日期
+air:记录日期 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:恒电位仪参数 ;
+         rdfs:range xsd:date ;
+         rdfs:label "记录日期"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/许用介质
+air:许用介质 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range xsd:string ;
+         rdfs:label "许用介质"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/许用压力
+air:许用压力 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:MEGA_PA ;
+         rdfs:comment "许用操作压力，单位：兆帕(MPa)"@zh ;
+         rdfs:label "许用压力"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/许用温度
+air:许用温度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:年度检查报告 ;
+         rdfs:range xsd:string ;
+         rdfs:label "许用温度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/设计介质
+air:设计介质 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "管道输送的设计介质，如天然气、成品油"@zh ;
+         rdfs:label "设计介质"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/设计单位
+air:设计单位 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:label "设计单位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/设计压力
+air:设计压力 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:MEGA_PA ;
+         rdfs:comment "管道设计压力，单位：兆帕(MPa)"@zh ;
+         rdfs:label "设计压力"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/设计温度
+air:设计温度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:DEG_C ;
+         rdfs:comment "管道设计温度，单位：摄氏度(℃)"@zh ;
+         rdfs:label "设计温度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/起止位置
+air:起止位置 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "管道的起止桩号位置"@zh ;
+         rdfs:label "起止位置"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/起点埋深
+air:起点埋深 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:穿越段 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:M ;
+         rdfs:comment "穿越段起点的管道埋深，单位：米(m)"@zh ;
+         rdfs:label "起点埋深"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/起点电流值
+air:起点电流值 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:穿越段 ;
+          rdfs:range xsd:double ;
+          qudt:unit unit:MA ;
+          rdfs:comment "穿越段起点的电流值，单位：毫安(mA)"@zh ;
+          rdfs:label "起点电流值"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/轴向长度
+air:轴向长度 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:壁厚测定 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:MM ;
+         rdfs:comment "缺陷的轴向长度，单位：毫米(mm)"@zh ;
+         rdfs:label "轴向长度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/输出电压
+air:输出电压 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:恒电位仪参数 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:V ;
+         rdfs:comment "恒电位仪输出电压，单位：伏特(V)"@zh ;
+         rdfs:label "输出电压"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/输出电流
+air:输出电流 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:恒电位仪参数 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:A ;
+         rdfs:comment "恒电位仪输出电流，单位：安培(A)"@zh ;
+         rdfs:label "输出电流"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/邮政编码
+air:邮政编码 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:使用单位 ;
+         rdfs:range xsd:string ;
+         rdfs:label "邮政编码"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阀室位置
+air:阀室位置 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:阀室 ;
+         rdfs:range xsd:string ;
+         rdfs:label "阀室位置"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阀室名称
+air:阀室名称 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:阀室 ;
+         rdfs:range xsd:string ;
+         rdfs:label "阀室名称"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阀室有无阴保系统
+air:阀室有无阴保系统 rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf owl:topDataProperty ;
+             rdfs:domain air:阀室 ;
+             rdfs:range xsd:string ;
+             rdfs:comment "阀室是否配备阴极保护系统，值：'有'或'无'"@zh ;
+             rdfs:label "阀室有无阴保系统"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/防腐层厚度
+air:防腐层厚度 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:管道 ;
+          rdfs:range <http://org.semanticweb.owlapi/error#Error6> ,
+                     xsd:double ;
+          qudt:unit unit:MM ;
+          rdfs:comment "防腐层厚度，单位：毫米(mm)"@zh ;
+          rdfs:label "防腐层厚度"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/防腐层材料
+air:防腐层材料 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:管道 ;
+          rdfs:range xsd:string ;
+          rdfs:label "防腐层材料"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阳极地床接地电阻
+air:阳极地床接地电阻 rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf owl:topDataProperty ;
+             rdfs:domain air:绝缘装置测试数据 ;
+             rdfs:range xsd:double ;
+             qudt:unit unit:OHM ;
+             rdfs:comment "阳极地床接地电阻，单位：欧姆(Ω)"@zh ;
+             rdfs:label "阳极地床接地电阻"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阳极开路电位
+air:阳极开路电位 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:牺牲阳极参数 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:V ;
+           rdfs:comment "阳极开路电位，单位：伏特(V)"@zh ;
+           rdfs:label "阳极开路电位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阳极接地电阻
+air:阳极接地电阻 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:牺牲阳极参数 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:OHM ;
+           rdfs:comment "阳极接地电阻，单位：欧姆(Ω)"@zh ;
+           rdfs:label "阳极接地电阻"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阳极材料
+air:阳极材料 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:牺牲阳极参数 ;
+         rdfs:range xsd:string ;
+         rdfs:comment "牺牲阳极材料，如镁合金、铝合金等"@zh ;
+         rdfs:label "阳极材料"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阳极组编号
+air:阳极组编号 rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain air:牺牲阳极参数 ;
+          rdfs:range xsd:string ;
+          rdfs:comment "牺牲阳极组编号或桩号"@zh ;
+          rdfs:label "阳极组编号"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阳极闭路电位
+air:阳极闭路电位 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:牺牲阳极参数 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:V ;
+           rdfs:comment "阳极闭路电位，单位：伏特(V)"@zh ;
+           rdfs:label "阳极闭路电位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/附属件
+air:附属件 rdf:type owl:DatatypeProperty ;
+        rdfs:subPropertyOf owl:topDataProperty ;
+        rdfs:domain air:跨越段 ;
+        rdfs:range xsd:string ;
+        rdfs:comment "跨越段附属件情况"@zh ;
+        rdfs:label "附属件"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/非保护侧电位
+air:非保护侧电位 rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain air:绝缘装置测试数据 ;
+           rdfs:range xsd:double ;
+           qudt:unit unit:V ;
+           rdfs:comment "绝缘装置非保护侧管地电位，单位：伏特(V)"@zh ;
+           rdfs:label "非保护侧电位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/预置电位
+air:预置电位 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:恒电位仪参数 ;
+         rdfs:range xsd:double ;
+         qudt:unit unit:V ;
+         rdfs:comment "恒电位仪预置电位，单位：伏特(V)"@zh ;
+         rdfs:label "预置电位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/验收日期
+air:验收日期 rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:domain air:管道 ;
+         rdfs:range xsd:date ;
+         rdfs:label "验收日期"@zh .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection-report#检测观测数据
+:检测观测数据 rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection-report#管道系统
+:管道系统 rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/三桩一牌
+air:三桩一牌 rdf:type owl:Class ;
+         rdfs:subClassOf air:地面装置 ;
+         rdfs:comment "管道沿线标准组合标识设施：测试桩+标志桩+转角桩+警示牌"@zh ;
+         rdfs:label "三桩一牌"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交叉测试桩
+air:交叉测试桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:测试桩 ;
+          rdfs:comment "设置在管道交叉位置处的测试桩"@zh ;
+          rdfs:label "交叉测试桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流干扰防护数据
+air:交流干扰防护数据 rdf:type owl:Class ;
+             rdfs:subClassOf :检测观测数据 ;
+             rdfs:comment "管道交流干扰防护（排流）检测数据"@zh ;
+             rdfs:label "交流干扰防护数据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试数据
+air:交流电压测试数据 rdf:type owl:Class ;
+             rdfs:subClassOf :检测观测数据 ;
+             rdfs:comment "管道沿线交流干扰电压测试数据"@zh ;
+             rdfs:label "交流电压测试数据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/人员
+air:人员 rdf:type owl:Class ;
+       rdfs:subClassOf owl:Thing ;
+       rdfs:comment "参与检测和审核的人员"@zh ;
+       rdfs:label "人员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/使用单位
+air:使用单位 rdf:type owl:Class ;
+         rdfs:subClassOf owl:Thing ;
+         rdfs:comment "管道使用单位/管理单位"@zh ;
+         rdfs:label "使用单位"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/光缆标志桩
+air:光缆标志桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:标志桩 ;
+          rdfs:comment "标识光缆位置的标志桩"@zh ;
+          rdfs:label "光缆标志桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/光缆桩
+air:光缆桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:标志桩 ;
+        rdfs:comment "与光缆相关的标识桩"@zh ;
+        rdfs:label "光缆桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/分界标志桩
+air:分界标志桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:标志桩 ;
+          rdfs:comment "标识管道分界位置的标志桩"@zh ;
+          rdfs:label "分界标志桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/加密桩
+air:加密桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:标志桩 ;
+        rdfs:comment "管道加密段的标识桩"@zh ;
+        rdfs:label "加密桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/变壁厚标志桩
+air:变壁厚标志桩 rdf:type owl:Class ;
+           rdfs:subClassOf air:标志桩 ;
+           rdfs:comment "标识管道壁厚变化位置的标志桩"@zh ;
+           rdfs:label "变壁厚标志桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/地质条件调查
+air:地质条件调查 rdf:type owl:Class ;
+           rdfs:subClassOf owl:Thing ;
+           rdfs:comment "管道沿线地质条件调查"@zh ;
+           rdfs:label "地质条件调查"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/地质灾害类型
+air:地质灾害类型 rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/地面装置
+air:地面装置 rdf:type owl:Class ;
+         rdfs:subClassOf :管道系统 ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty air:位于管道 ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass air:管道
+                         ] ;
+         rdfs:comment "管道沿线地面标识设施，包括测试桩、标志桩等"@zh ;
+         rdfs:label "地面装置"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/垂直转角桩
+air:垂直转角桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:转角桩 ;
+          rdfs:comment "标识管道垂直方向转角的桩"@zh ;
+          rdfs:label "垂直转角桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/壁厚测定
+air:壁厚测定 rdf:type owl:Class ;
+         rdfs:subClassOf owl:Thing ;
+         rdfs:comment "管道壁厚抽样测定数据"@zh ;
+         rdfs:label "壁厚测定"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/安全警告牌
+air:安全警告牌 rdf:type owl:Class ;
+          rdfs:subClassOf air:警示牌 ;
+          rdfs:comment "管道安全警告标识牌"@zh ;
+          rdfs:label "安全警告牌"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/完整性评价
+air:完整性评价 rdf:type owl:Class ;
+          rdfs:subClassOf owl:Thing ;
+          rdfs:comment "管道完整性评价结论和建议"@zh ;
+          rdfs:label "完整性评价"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/宏观检查
+air:宏观检查 rdf:type owl:Class ;
+         rdfs:subClassOf owl:Thing ;
+         rdfs:comment "管道宏观检查，包括位置、走向、地面装置等"@zh ;
+         rdfs:label "宏观检查"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/审核员
+air:审核员 rdf:type owl:Class ;
+        rdfs:subClassOf air:人员 ;
+        rdfs:comment "审核报告内容的人员"@zh ;
+        rdfs:label "审核员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/年度检查报告
+air:年度检查报告 rdf:type owl:Class ;
+           rdfs:subClassOf owl:Thing ,
+                           [ rdf:type owl:Restriction ;
+                             owl:onProperty air:所属管道 ;
+                             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                             owl:onClass air:管道
+                           ] ;
+           rdfs:comment "长输油气管道年度检查报告，包含所有检查项目的信息"@zh ;
+           rdfs:label "年度检查报告"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/恒电位仪参数
+air:恒电位仪参数 rdf:type owl:Class ;
+           rdfs:subClassOf :检测观测数据 ;
+           rdfs:comment "恒电位仪的运行参数记录"@zh ;
+           rdfs:label "恒电位仪参数"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/批准人
+air:批准人 rdf:type owl:Class ;
+        rdfs:subClassOf air:人员 ;
+        rdfs:comment "批准报告签发的人员"@zh ;
+        rdfs:label "批准人"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/排流桩
+air:排流桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:标志桩 ;
+        rdfs:comment "用于交流排流保护的桩"@zh ;
+        rdfs:label "排流桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/智能测试桩
+air:智能测试桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:测试桩 ;
+          rdfs:comment "带自动数据采集功能的智能测试桩"@zh ;
+          rdfs:label "智能测试桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/智能电位测试桩
+air:智能电位测试桩 rdf:type owl:Class ;
+            rdfs:subClassOf air:智能测试桩 ,
+                            air:电位测试桩 ;
+            rdfs:comment "具备电位测量功能的智能测试桩"@zh ;
+            rdfs:label "智能电位测试桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/标志桩
+air:标志桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:地面装置 ;
+        rdfs:comment "管道沿线各类标识设施的基类"@zh ,
+                     "管道沿线的各类标识设施，包括里程桩、转角桩、穿越标志桩、光缆标志桩等"@zh ;
+        rdfs:label "标志桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/标示桩
+air:标示桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:标志桩 ;
+        rdfs:comment "一般性管道标示桩"@zh ;
+        rdfs:label "标示桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/校对员
+air:校对员 rdf:type owl:Class ;
+        rdfs:subClassOf air:人员 ;
+        rdfs:comment "校对检测报告内容的人员"@zh ;
+        rdfs:label "校对员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查结论
+air:检查结论 rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检查项签名
+air:检查项签名 rdf:type owl:Class ;
+          rdfs:subClassOf owl:Thing ;
+          rdfs:comment "单个检查项/子报告的签名（检测+校对/检测+审核），区别于报告封面结论页的四级签名"@zh ;
+          rdfs:label "检查项签名"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检测员
+air:检测员 rdf:type owl:Class ;
+        rdfs:subClassOf air:人员 ;
+        rdfs:comment "执行现场检测工作的人员"@zh ;
+        rdfs:label "检测员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/检验员
+air:检验员 rdf:type owl:Class ;
+        rdfs:subClassOf air:人员 ;
+        rdfs:comment "管道定期检验的检验员，需持相应执业证"@zh ;
+        rdfs:label "检验员"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护设施
+air:水工保护设施 rdf:type owl:Class ;
+           rdfs:subClassOf :管道系统 ,
+                           [ rdf:type owl:Restriction ;
+                             owl:onProperty air:位于管道 ;
+                             owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                             owl:onClass air:管道
+                           ] ;
+           rdfs:comment "管道沿线的浆砌石护坡、挡墙等水工保护设施"@zh ;
+           rdfs:label "水工保护设施"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水平转角桩
+air:水平转角桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:转角桩 ;
+          rdfs:comment "标识管道水平方向转角的桩"@zh ;
+          rdfs:label "水平转角桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/浅埋数据
+air:浅埋数据 rdf:type owl:Class ;
+         rdfs:subClassOf :检测观测数据 ;
+         rdfs:comment "管道埋深浅于规定值的区段数据"@zh ;
+         rdfs:label "浅埋数据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/测试桩
+air:测试桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:地面装置 ;
+        rdfs:comment "用于电位/电流测试的测试桩，是具体测试桩类型的基类"@zh ,
+                     "用于电位测试的测试桩，分为电位测试桩和电流测试桩"@zh ;
+        rdfs:label "测试桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/牺牲阳极参数
+air:牺牲阳极参数 rdf:type owl:Class ;
+           rdfs:subClassOf :检测观测数据 ;
+           rdfs:comment "牺牲阳极的测试参数，包括开路电位、闭路电位、接地电阻等"@zh ;
+           rdfs:label "牺牲阳极参数"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试数据
+air:电位测试数据 rdf:type owl:Class ;
+           rdfs:subClassOf :检测观测数据 ;
+           rdfs:comment "管地电位测试的测量数据，包含最正、最负和平均值"@zh ;
+           rdfs:label "电位测试数据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试桩
+air:电位测试桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:测试桩 ;
+          rdfs:comment "用于测量管地电位的测试桩"@zh ;
+          rdfs:label "电位测试桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电性能测试
+air:电性能测试 rdf:type owl:Class ;
+          rdfs:subClassOf owl:Thing ;
+          rdfs:comment "绝缘装置和电连续性测试"@zh ;
+          rdfs:label "电性能测试"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电流测试桩
+air:电流测试桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:测试桩 ;
+          rdfs:comment "用于电流测量的测试桩"@zh ;
+          rdfs:label "电流测试桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电流电位测试桩
+air:电流电位测试桩 rdf:type owl:Class ;
+            rdfs:subClassOf air:测试桩 ;
+            rdfs:comment "同时具备电流测试和电位测试功能的测试桩"@zh ;
+            rdfs:label "电流电位测试桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/直流干扰防护数据
+air:直流干扰防护数据 rdf:type owl:Class ;
+             rdfs:subClassOf :检测观测数据 ;
+             rdfs:comment "管道直流干扰防护（排流）检测数据"@zh ;
+             rdfs:label "直流干扰防护数据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越方式
+air:穿越方式 rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越标志桩
+air:穿越标志桩 rdf:type owl:Class ;
+          rdfs:subClassOf air:标志桩 ;
+          rdfs:comment "标识管道穿越铁路、公路、河流等位置的标志桩"@zh ;
+          rdfs:label "穿越标志桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越桩
+air:穿越桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:标志桩 ;
+        rdfs:comment "标识管道穿越位置的桩"@zh ;
+        rdfs:label "穿越桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越段
+air:穿越段 rdf:type owl:Class ;
+        rdfs:subClassOf :管道系统 ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty air:位于管道 ;
+                          owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                          owl:onClass air:管道
+                        ] ;
+        rdfs:comment "管道穿越河流、铁路、公路等设施的管段"@zh ;
+        rdfs:label "穿越段"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/穿越警示牌
+air:穿越警示牌 rdf:type owl:Class ;
+          rdfs:subClassOf air:警示牌 ;
+          rdfs:comment "标识管道穿越位置的警示牌"@zh ;
+          rdfs:label "穿越警示牌"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管道
+air:管道 rdf:type owl:Class ;
+       rdfs:subClassOf :管道系统 ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty air:归属单位 ;
+                         owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                         owl:onClass air:使用单位
+                       ] ;
+       rdfs:comment "被检测的长输油气管道实体"@zh ;
+       rdfs:label "管道"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/管道交叉标志桩
+air:管道交叉标志桩 rdf:type owl:Class ;
+            rdfs:subClassOf air:标志桩 ;
+            rdfs:comment "标识管道与管道交叉位置的标志桩"@zh ;
+            rdfs:label "管道交叉标志桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/绝缘装置测试数据
+air:绝缘装置测试数据 rdf:type owl:Class ;
+             rdfs:subClassOf :检测观测数据 ;
+             rdfs:comment "绝缘接头、跨接电缆的电气性能测试数据"@zh ;
+             rdfs:label "绝缘装置测试数据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/编制人
+air:编制人 rdf:type owl:Class ;
+        rdfs:subClassOf air:人员 ;
+        rdfs:comment "编制报告的人员"@zh ;
+        rdfs:label "编制人"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/警示牌
+air:警示牌 rdf:type owl:Class ;
+        rdfs:subClassOf air:地面装置 ;
+        rdfs:comment "管道沿线的地面警示标识牌"@zh ;
+        rdfs:label "警示牌"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/设施状态
+air:设施状态 rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/资料审查
+air:资料审查 rdf:type owl:Class ;
+         rdfs:subClassOf owl:Thing ;
+         rdfs:comment "年度检查中的资料审查项目"@zh ;
+         rdfs:label "资料审查"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/资料审查事件记载
+air:资料审查事件记载 rdf:type owl:Class ;
+             rdfs:subClassOf owl:Thing ;
+             rdfs:comment "管道运行期间发生的事件记录，包括腐蚀穿孔、开裂等"@zh ;
+             rdfs:label "资料审查事件记载"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/跨越段
+air:跨越段 rdf:type owl:Class ;
+        rdfs:subClassOf :管道系统 ;
+        rdfs:comment "管道跨越公路、铁路、河流等位置的段落"@zh ;
+        rdfs:label "跨越段"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/转角桩
+air:转角桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:地面装置 ;
+        rdfs:comment "标识管道转角位置的设施"@zh ;
+        rdfs:label "转角桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/里程桩
+air:里程桩 rdf:type owl:Class ;
+        rdfs:subClassOf air:标志桩 ;
+        rdfs:comment "标识管道里程的桩"@zh ;
+        rdfs:label "里程桩"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阀室
+air:阀室 rdf:type owl:Class ;
+       rdfs:subClassOf :管道系统 ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty air:位于管道 ;
+                         owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                         owl:onClass air:管道
+                       ] ;
+       rdfs:comment "管道沿线阀室设施"@zh ;
+       rdfs:label "阀室"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阀室类型
+air:阀室类型 rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/防护带占压数据
+air:防护带占压数据 rdf:type owl:Class ;
+            rdfs:subClassOf owl:Thing ;
+            rdfs:comment "管道沿线防护带占压情况数据"@zh ;
+            rdfs:label "防护带占压数据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/防腐层检查
+air:防腐层检查 rdf:type owl:Class ;
+          rdfs:subClassOf owl:Thing ;
+          rdfs:comment "管道外防腐层质量检测"@zh ;
+          rdfs:label "防腐层检查"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/防腐层等级
+air:防腐层等级 rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/防腐层质量检测数据
+air:防腐层质量检测数据 rdf:type owl:Class ;
+              rdfs:subClassOf :检测观测数据 ;
+              rdfs:comment "埋地管道外防腐层质量检测结果"@zh ;
+              rdfs:label "防腐层质量检测数据"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/阴极保护系统
+air:阴极保护系统 rdf:type owl:Class ;
+           rdfs:subClassOf owl:Thing ;
+           rdfs:comment "阴极保护系统的各项测试数据"@zh ;
+           rdfs:label "阴极保护系统"@zh .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/G105京澳线穿越
+air:G105京澳线穿越 rdf:type owl:NamedIndividual ,
+                       air:穿越段 ;
+              air:位于管道 air:永唐秦天然气管道 ;
+              air:审核人员 air:郑楚凡 ;
+              air:检测人员 air:时春利 ;
+              air:穿越方式 air:顶管 ;
+              air:检测日期 "2025-06-17"^^xsd:date ;
+              air:穿越段名称 "G105京澳线" ;
+              air:穿越终点 "YQ-0116" ;
+              air:穿越起点 "YQG-0115" ;
+              air:穿越长度 "48.0"^^xsd:double ;
+              air:终点埋深 "6.2"^^xsd:double ;
+              air:终点电流值 "279.0"^^xsd:double ;
+              air:起点埋深 "6.2"^^xsd:double ;
+              air:起点电流值 "286.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/RTU阀室
+air:RTU阀室 rdf:type owl:NamedIndividual ,
+                   air:阀室类型 ;
+          rdfs:label "RTU监控阀室"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/YQL-0057
+air:YQL-0057 rdf:type owl:NamedIndividual ,
+                      air:电位测试桩 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:设施状态 air:正常 ;
+             air:位置 "YQL-0057" ;
+             air:偏移距离 "0.0"^^xsd:double ;
+             air:埋深 "1.93"^^xsd:double ;
+             air:描述 "农田" ;
+             air:检测日期 "2025-06-15"^^xsd:date ;
+             air:纬度 "39.32358816"^^xsd:double ;
+             air:经度 "116.60102971"^^xsd:double ;
+             air:设施类型 "电位测试桩" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/YQP-0015
+air:YQP-0015 rdf:type owl:NamedIndividual ,
+                      air:电位测试桩 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:设施状态 air:正常 ;
+             air:位置 "YQP-0015" ;
+             air:偏移距离 "0.5"^^xsd:double ;
+             air:埋深 "1.38"^^xsd:double ;
+             air:描述 "农田" ;
+             air:检测日期 "2025-06-15"^^xsd:date ;
+             air:纬度 "39.30779636"^^xsd:double ;
+             air:经度 "116.52591226"^^xsd:double ;
+             air:设施类型 "电位测试桩" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/YQP-0021
+air:YQP-0021 rdf:type owl:NamedIndividual ,
+                      air:电位测试桩 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:设施状态 air:正常 ;
+             air:位置 "YQP-0021" ;
+             air:偏移距离 "0.5"^^xsd:double ;
+             air:埋深 "1.21"^^xsd:double ;
+             air:描述 "农田" ;
+             air:检测日期 "2025-06-15"^^xsd:date ;
+             air:纬度 "39.3167899"^^xsd:double ;
+             air:经度 "116.53690696"^^xsd:double ;
+             air:设施类型 "电位测试桩" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/YQP-0025
+air:YQP-0025 rdf:type owl:NamedIndividual ,
+                      air:智能测试桩 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:设施状态 air:正常 ;
+             air:位置 "YQP-0025" ;
+             air:偏移距离 "0.0"^^xsd:double ;
+             air:埋深 "1.37"^^xsd:double ;
+             air:描述 "农田" ;
+             air:检测日期 "2025-06-15"^^xsd:date ;
+             air:纬度 "39.32224721"^^xsd:double ;
+             air:经度 "116.5460211"^^xsd:double ;
+             air:设施类型 "智能测试桩" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/YQP-0031
+air:YQP-0031 rdf:type owl:NamedIndividual ,
+                      air:智能测试桩 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:设施状态 air:正常 ;
+             air:位置 "YQP-0031" ;
+             air:偏移距离 "0.3"^^xsd:double ;
+             air:埋深 "1.34"^^xsd:double ;
+             air:描述 "林地" ;
+             air:检测日期 "2025-06-15"^^xsd:date ;
+             air:纬度 "39.3237951"^^xsd:double ;
+             air:经度 "116.55661583"^^xsd:double ;
+             air:设施类型 "智能测试桩" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/YQP-0039
+air:YQP-0039 rdf:type owl:NamedIndividual ,
+                      air:智能测试桩 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:设施状态 air:正常 ;
+             air:位置 "YQP-0039" ;
+             air:偏移距离 "0.0"^^xsd:double ;
+             air:埋深 "1.9"^^xsd:double ;
+             air:描述 "农田" ;
+             air:检测日期 "2025-06-15"^^xsd:date ;
+             air:纬度 "39.3260484"^^xsd:double ;
+             air:经度 "116.56747341"^^xsd:double ;
+             air:设施类型 "智能测试桩" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/YQP-0045
+air:YQP-0045 rdf:type owl:NamedIndividual ,
+                      air:电位测试桩 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:设施状态 air:正常 ;
+             air:位置 "YQP-0045" ;
+             air:偏移距离 "0.0"^^xsd:double ;
+             air:埋深 "1.93"^^xsd:double ;
+             air:描述 "农田" ;
+             air:检测日期 "2025-06-15"^^xsd:date ;
+             air:纬度 "39.32745927"^^xsd:double ;
+             air:经度 "116.58009052"^^xsd:double ;
+             air:设施类型 "电位测试桩" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/YQP-0048
+air:YQP-0048 rdf:type owl:NamedIndividual ,
+                      air:智能测试桩 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:设施状态 air:正常 ;
+             air:位置 "YQP-0048" ;
+             air:偏移距离 "0.0"^^xsd:double ;
+             air:埋深 "2.45"^^xsd:double ;
+             air:描述 "农田" ;
+             air:检测日期 "2025-06-15"^^xsd:date ;
+             air:纬度 "39.32522576"^^xsd:double ;
+             air:经度 "116.58930131"^^xsd:double ;
+             air:设施类型 "智能测试桩" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/一级
+air:一级 rdf:type owl:NamedIndividual ,
+                air:防腐层等级 ;
+       rdfs:comment "防腐层质量良好"@zh ;
+       rdfs:label "一级"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/三级
+air:三级 rdf:type owl:NamedIndividual ,
+                air:防腐层等级 ;
+       rdfs:comment "防腐层质量较差，需要维修"@zh ;
+       rdfs:label "三级"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/东高路穿越
+air:东高路穿越 rdf:type owl:NamedIndividual ,
+                   air:穿越段 ;
+          air:位于管道 air:永唐秦天然气管道 ;
+          air:审核人员 air:郑楚凡 ;
+          air:检测人员 air:时春利 ;
+          air:穿越方式 air:顶管 ;
+          air:检测日期 "2025-06-17"^^xsd:date ;
+          air:穿越段名称 "东高路" ;
+          air:穿越终点 "YQ-0077" ;
+          air:穿越起点 "YQ-0076" ;
+          air:穿越长度 "36.0"^^xsd:double ;
+          air:终点埋深 "1.57"^^xsd:double ;
+          air:终点电流值 "338.0"^^xsd:double ;
+          air:起点埋深 "1.57"^^xsd:double ;
+          air:起点电流值 "342.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/二级
+air:二级 rdf:type owl:NamedIndividual ,
+                air:防腐层等级 ;
+       rdfs:comment "防腐层质量合格"@zh ;
+       rdfs:label "二级"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQL-0068
+air:交流电压测试-YQL-0068 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.402"^^xsd:double ;
+                    air:交流电压最大值 "0.414"^^xsd:double ;
+                    air:交流电压最小值 "0.384"^^xsd:double ;
+                    air:交流电流密度平均值 "0.014"^^xsd:double ;
+                    air:交流电流密度最大值 "0.014"^^xsd:double ;
+                    air:交流电流密度最小值 "0.014"^^xsd:double ;
+                    air:埋深 "1.46"^^xsd:double ;
+                    air:检测位置 "YQL-0068" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQL-0087
+air:交流电压测试-YQL-0087 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.254"^^xsd:double ;
+                    air:交流电压最大值 "0.281"^^xsd:double ;
+                    air:交流电压最小值 "0.227"^^xsd:double ;
+                    air:交流电流密度平均值 "0.009"^^xsd:double ;
+                    air:交流电流密度最大值 "0.009"^^xsd:double ;
+                    air:交流电流密度最小值 "0.009"^^xsd:double ;
+                    air:埋深 "1.88"^^xsd:double ;
+                    air:检测位置 "YQL-0087" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQL-0105
+air:交流电压测试-YQL-0105 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.242"^^xsd:double ;
+                    air:交流电压最大值 "0.257"^^xsd:double ;
+                    air:交流电压最小值 "0.237"^^xsd:double ;
+                    air:交流电流密度平均值 "0.158"^^xsd:double ;
+                    air:交流电流密度最大值 "0.158"^^xsd:double ;
+                    air:交流电流密度最小值 "0.158"^^xsd:double ;
+                    air:埋深 "2.73"^^xsd:double ;
+                    air:检测位置 "YQL-0105" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQL-0130
+air:交流电压测试-YQL-0130 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.631"^^xsd:double ;
+                    air:交流电压最大值 "0.649"^^xsd:double ;
+                    air:交流电压最小值 "0.615"^^xsd:double ;
+                    air:交流电流密度平均值 "0.705"^^xsd:double ;
+                    air:交流电流密度最大值 "0.705"^^xsd:double ;
+                    air:交流电流密度最小值 "0.705"^^xsd:double ;
+                    air:埋深 "3.0"^^xsd:double ;
+                    air:检测位置 "YQL-0130" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQL-0154
+air:交流电压测试-YQL-0154 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "1.264"^^xsd:double ;
+                    air:交流电压最大值 "1.279"^^xsd:double ;
+                    air:交流电压最小值 "1.252"^^xsd:double ;
+                    air:交流电流密度平均值 "0.111"^^xsd:double ;
+                    air:交流电流密度最大值 "0.111"^^xsd:double ;
+                    air:交流电流密度最小值 "0.111"^^xsd:double ;
+                    air:埋深 "1.83"^^xsd:double ;
+                    air:检测位置 "YQL-0154" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0015
+air:交流电压测试-YQP-0015 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.191"^^xsd:double ;
+                    air:交流电压最大值 "0.283"^^xsd:double ;
+                    air:交流电压最小值 "0.173"^^xsd:double ;
+                    air:交流电流密度平均值 "0.028"^^xsd:double ;
+                    air:交流电流密度最大值 "0.028"^^xsd:double ;
+                    air:交流电流密度最小值 "0.028"^^xsd:double ;
+                    air:埋深 "1.38"^^xsd:double ;
+                    air:检测位置 "YQP-0015" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0025
+air:交流电压测试-YQP-0025 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "1.854"^^xsd:double ;
+                    air:交流电压最大值 "1.88"^^xsd:double ;
+                    air:交流电压最小值 "1.786"^^xsd:double ;
+                    air:交流电流密度平均值 "1.234"^^xsd:double ;
+                    air:交流电流密度最大值 "1.234"^^xsd:double ;
+                    air:交流电流密度最小值 "1.234"^^xsd:double ;
+                    air:埋深 "1.37"^^xsd:double ;
+                    air:检测位置 "YQP-0025" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0031
+air:交流电压测试-YQP-0031 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "2.242"^^xsd:double ;
+                    air:交流电压最大值 "2.25"^^xsd:double ;
+                    air:交流电压最小值 "2.238"^^xsd:double ;
+                    air:交流电流密度平均值 "0.011"^^xsd:double ;
+                    air:交流电流密度最大值 "0.011"^^xsd:double ;
+                    air:交流电流密度最小值 "0.011"^^xsd:double ;
+                    air:埋深 "1.34"^^xsd:double ;
+                    air:检测位置 "YQP-0031" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0039
+air:交流电压测试-YQP-0039 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "2.085"^^xsd:double ;
+                    air:交流电压最大值 "2.103"^^xsd:double ;
+                    air:交流电压最小值 "2.067"^^xsd:double ;
+                    air:交流电流密度平均值 "0.143"^^xsd:double ;
+                    air:交流电流密度最大值 "0.143"^^xsd:double ;
+                    air:交流电流密度最小值 "0.143"^^xsd:double ;
+                    air:埋深 "1.9"^^xsd:double ;
+                    air:检测位置 "YQP-0039" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0048
+air:交流电压测试-YQP-0048 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "2.007"^^xsd:double ;
+                    air:交流电压最大值 "2.015"^^xsd:double ;
+                    air:交流电压最小值 "2.001"^^xsd:double ;
+                    air:交流电流密度平均值 "0.029"^^xsd:double ;
+                    air:交流电流密度最大值 "0.029"^^xsd:double ;
+                    air:交流电流密度最小值 "0.029"^^xsd:double ;
+                    air:埋深 "2.45"^^xsd:double ;
+                    air:检测位置 "YQP-0048" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0061
+air:交流电压测试-YQP-0061 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.657"^^xsd:double ;
+                    air:交流电压最大值 "0.672"^^xsd:double ;
+                    air:交流电压最小值 "0.642"^^xsd:double ;
+                    air:交流电流密度平均值 "0.19"^^xsd:double ;
+                    air:交流电流密度最大值 "0.19"^^xsd:double ;
+                    air:交流电流密度最小值 "0.19"^^xsd:double ;
+                    air:埋深 "1.96"^^xsd:double ;
+                    air:检测位置 "YQP-0061" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0073
+air:交流电压测试-YQP-0073 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.301"^^xsd:double ;
+                    air:交流电压最大值 "0.315"^^xsd:double ;
+                    air:交流电压最小值 "0.287"^^xsd:double ;
+                    air:交流电流密度平均值 "0.022"^^xsd:double ;
+                    air:交流电流密度最大值 "0.022"^^xsd:double ;
+                    air:交流电流密度最小值 "0.022"^^xsd:double ;
+                    air:埋深 "1.89"^^xsd:double ;
+                    air:检测位置 "YQP-0073" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0080
+air:交流电压测试-YQP-0080 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.207"^^xsd:double ;
+                    air:交流电压最大值 "0.211"^^xsd:double ;
+                    air:交流电压最小值 "0.201"^^xsd:double ;
+                    air:交流电流密度平均值 "0.014"^^xsd:double ;
+                    air:交流电流密度最大值 "0.014"^^xsd:double ;
+                    air:交流电流密度最小值 "0.014"^^xsd:double ;
+                    air:埋深 "2.09"^^xsd:double ;
+                    air:检测位置 "YQP-0080" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0097
+air:交流电压测试-YQP-0097 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.227"^^xsd:double ;
+                    air:交流电压最大值 "0.243"^^xsd:double ;
+                    air:交流电压最小值 "0.217"^^xsd:double ;
+                    air:交流电流密度平均值 "0.037"^^xsd:double ;
+                    air:交流电流密度最大值 "0.037"^^xsd:double ;
+                    air:交流电流密度最小值 "0.037"^^xsd:double ;
+                    air:埋深 "1.9"^^xsd:double ;
+                    air:检测位置 "YQP-0097" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0110
+air:交流电压测试-YQP-0110 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.564"^^xsd:double ;
+                    air:交流电压最大值 "0.573"^^xsd:double ;
+                    air:交流电压最小值 "0.551"^^xsd:double ;
+                    air:交流电流密度平均值 "0.483"^^xsd:double ;
+                    air:交流电流密度最大值 "0.483"^^xsd:double ;
+                    air:交流电流密度最小值 "0.483"^^xsd:double ;
+                    air:埋深 "2.65"^^xsd:double ;
+                    air:检测位置 "YQP-0110" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0133
+air:交流电压测试-YQP-0133 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.515"^^xsd:double ;
+                    air:交流电压最大值 "0.523"^^xsd:double ;
+                    air:交流电压最小值 "0.507"^^xsd:double ;
+                    air:交流电流密度平均值 "0.023"^^xsd:double ;
+                    air:交流电流密度最大值 "0.023"^^xsd:double ;
+                    air:交流电流密度最小值 "0.023"^^xsd:double ;
+                    air:埋深 "3.0"^^xsd:double ;
+                    air:检测位置 "YQP-0133" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0142
+air:交流电压测试-YQP-0142 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.467"^^xsd:double ;
+                    air:交流电压最大值 "0.474"^^xsd:double ;
+                    air:交流电压最小值 "0.452"^^xsd:double ;
+                    air:交流电流密度平均值 "0.018"^^xsd:double ;
+                    air:交流电流密度最大值 "0.018"^^xsd:double ;
+                    air:交流电流密度最小值 "0.018"^^xsd:double ;
+                    air:埋深 "2.15"^^xsd:double ;
+                    air:检测位置 "YQP-0142" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0147
+air:交流电压测试-YQP-0147 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.843"^^xsd:double ;
+                    air:交流电压最大值 "0.857"^^xsd:double ;
+                    air:交流电压最小值 "0.832"^^xsd:double ;
+                    air:交流电流密度平均值 "1.503"^^xsd:double ;
+                    air:交流电流密度最大值 "1.503"^^xsd:double ;
+                    air:交流电流密度最小值 "1.503"^^xsd:double ;
+                    air:埋深 "2.63"^^xsd:double ;
+                    air:检测位置 "YQP-0147" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0159
+air:交流电压测试-YQP-0159 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "1.021"^^xsd:double ;
+                    air:交流电压最大值 "1.036"^^xsd:double ;
+                    air:交流电压最小值 "1.012"^^xsd:double ;
+                    air:交流电流密度平均值 "7.122"^^xsd:double ;
+                    air:交流电流密度最大值 "7.122"^^xsd:double ;
+                    air:交流电流密度最小值 "7.122"^^xsd:double ;
+                    air:埋深 "1.87"^^xsd:double ;
+                    air:检测位置 "YQP-0159" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0166
+air:交流电压测试-YQP-0166 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.581"^^xsd:double ;
+                    air:交流电压最大值 "0.684"^^xsd:double ;
+                    air:交流电压最小值 "0.568"^^xsd:double ;
+                    air:交流电流密度平均值 "0.155"^^xsd:double ;
+                    air:交流电流密度最大值 "0.155"^^xsd:double ;
+                    air:交流电流密度最小值 "0.155"^^xsd:double ;
+                    air:埋深 "1.86"^^xsd:double ;
+                    air:检测位置 "YQP-0166" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0174
+air:交流电压测试-YQP-0174 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.767"^^xsd:double ;
+                    air:交流电压最大值 "0.773"^^xsd:double ;
+                    air:交流电压最小值 "0.751"^^xsd:double ;
+                    air:交流电流密度平均值 "0.497"^^xsd:double ;
+                    air:交流电流密度最大值 "0.497"^^xsd:double ;
+                    air:交流电流密度最小值 "0.497"^^xsd:double ;
+                    air:埋深 "1.48"^^xsd:double ;
+                    air:检测位置 "YQP-0174" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/交流电压测试-YQP-0188
+air:交流电压测试-YQP-0188 rdf:type owl:NamedIndividual ,
+                             air:交流电压测试数据 ;
+                    air:审核人员 air:郑楚凡 ;
+                    air:检测人员 air:时春利 ;
+                    air:交流电压平均值 "0.81"^^xsd:double ;
+                    air:交流电压最大值 "0.81"^^xsd:double ;
+                    air:交流电压最小值 "0.81"^^xsd:double ;
+                    air:交流电流密度平均值 "0.049"^^xsd:double ;
+                    air:交流电流密度最大值 "0.049"^^xsd:double ;
+                    air:交流电流密度最小值 "0.049"^^xsd:double ;
+                    air:埋深 "1.58"^^xsd:double ;
+                    air:检测位置 "YQP-0188" ;
+                    air:检测日期 "2025-02-24"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/京台高速穿越
+air:京台高速穿越 rdf:type owl:NamedIndividual ,
+                    air:穿越段 ;
+           air:位于管道 air:永唐秦天然气管道 ;
+           air:审核人员 air:郑楚凡 ;
+           air:检测人员 air:时春利 ;
+           air:穿越方式 air:顶管 ;
+           air:检测日期 "2025-06-17"^^xsd:date ;
+           air:穿越段名称 "京台高速" ;
+           air:穿越终点 "YQG-0043" ;
+           air:穿越起点 "YQ-0044" ;
+           air:穿越长度 "45.0"^^xsd:double ;
+           air:终点埋深 "1.91"^^xsd:double ;
+           air:终点电流值 "270.0"^^xsd:double ;
+           air:起点埋深 "1.91"^^xsd:double ;
+           air:起点电流值 "265.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/京山铁路穿越
+air:京山铁路穿越 rdf:type owl:NamedIndividual ,
+                    air:穿越段 ;
+           air:位于管道 air:永唐秦天然气管道 ;
+           air:审核人员 air:郑楚凡 ;
+           air:检测人员 air:时春利 ;
+           air:穿越方式 air:顶管 ;
+           air:检测日期 "2025-06-17"^^xsd:date ;
+           air:穿越段名称 "京山铁路" ;
+           air:穿越终点 "YQ-0182" ;
+           air:穿越起点 "YQT-0181" ;
+           air:穿越长度 "18.0"^^xsd:double ;
+           air:终点埋深 "3.5"^^xsd:double ;
+           air:终点电流值 "268.0"^^xsd:double ;
+           air:起点埋深 "4.2"^^xsd:double ;
+           air:起点电流值 "264.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/京沪高铁穿越
+air:京沪高铁穿越 rdf:type owl:NamedIndividual ,
+                    air:穿越段 ;
+           air:位于管道 air:永唐秦天然气管道 ;
+           air:审核人员 air:郑楚凡 ;
+           air:检测人员 air:时春利 ;
+           air:穿越方式 air:定向钻 ;
+           air:检测日期 "2025-06-17"^^xsd:date ;
+           air:穿越段名称 "京沪高铁" ;
+           air:穿越终点 "YQ-0172" ;
+           air:穿越起点 "YQT-0171" ;
+           air:穿越长度 "37.0"^^xsd:double ;
+           air:终点埋深 "3.7"^^xsd:double ;
+           air:终点电流值 "278.0"^^xsd:double ;
+           air:起点埋深 "3.0"^^xsd:double ;
+           air:起点电流值 "275.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/允许使用
+air:允许使用 rdf:type owl:NamedIndividual ,
+                  air:检查结论 ;
+         rdfs:label "允许使用"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/北京输油气分公司
+air:北京输油气分公司 rdf:type owl:NamedIndividual ,
+                      air:使用单位 ;
+             air:安全管理人员 air:郝东坡 ;
+             air:单位名称 "国家管网集团北方管道有限责任公司北京输油气分公司" ;
+             air:单位地址 "北京市房山区西潞街道长虹西路73号1幢1层B259" ;
+             air:联系电话 "0316-2090037" ;
+             air:邮政编码 "102400" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/单向手动阀室
+air:单向手动阀室 rdf:type owl:NamedIndividual ,
+                    air:阀室类型 ;
+           rdfs:label "单向手动阀室"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/四级
+air:四级 rdf:type owl:NamedIndividual ,
+                air:防腐层等级 ;
+       rdfs:comment "防腐层质量差，必须维修"@zh ;
+       rdfs:label "四级"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/地质条件调查-永唐秦
+air:地质条件调查-永唐秦 rdf:type owl:NamedIndividual ,
+                        air:地质条件调查 ;
+               air:地质灾害类型 air:矿产地下采空区 ;
+               air:审核人员 air:郑楚凡 ;
+               air:检测人员 air:时春利 ;
+               air:描述 "无" ;
+               air:检测日期 "2025-06-17"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/地质沉降区
+air:地质沉降区 rdf:type owl:NamedIndividual ,
+                   air:地质灾害类型 ;
+          rdfs:label "地质沉降区"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/大开挖
+air:大开挖 rdf:type owl:NamedIndividual ,
+                 air:穿越方式 ;
+        rdfs:label "大开挖"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/套管
+air:套管 rdf:type owl:NamedIndividual ,
+                air:穿越方式 ;
+       rdfs:label "套管"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/定向钻
+air:定向钻 rdf:type owl:NamedIndividual ,
+                 air:穿越方式 ;
+        rdfs:label "定向钻"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/手动阀室
+air:手动阀室 rdf:type owl:NamedIndividual ,
+                  air:阀室类型 ;
+         rdfs:label "手动阀室"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/损坏
+air:损坏 rdf:type owl:NamedIndividual ,
+                air:设施状态 ;
+       rdfs:label "损坏"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/新龙河穿越
+air:新龙河穿越 rdf:type owl:NamedIndividual ,
+                   air:穿越段 ;
+          air:位于管道 air:永唐秦天然气管道 ;
+          air:审核人员 air:郑楚凡 ;
+          air:检测人员 air:时春利 ;
+          air:穿越方式 air:大开挖 ;
+          air:描述 "大开挖穿越新龙河" ;
+          air:检测日期 "2025-06-17"^^xsd:date ;
+          air:穿越段名称 "新龙河" ;
+          air:穿越终点 "YQH-0165" ;
+          air:穿越起点 "YQH-0163" ;
+          air:穿越长度 "116.0"^^xsd:double ;
+          air:终点埋深 "2.2"^^xsd:double ;
+          air:终点电流值 "374.0"^^xsd:double ;
+          air:起点埋深 "2.0"^^xsd:double ;
+          air:起点电流值 "368.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/时春利
+air:时春利 rdf:type owl:NamedIndividual ,
+                 air:人员 ,
+                 air:检测员 ;
+        air:所属单位 air:北京输油气分公司 ;
+        air:姓名 "时春利" ;
+        air:执业证号 "TSGR1234-2024" ;
+        air:职称 "工程师" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/正常
+air:正常 rdf:type owl:NamedIndividual ,
+                air:设施状态 ;
+       rdfs:label "正常"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/歪倒
+air:歪倒 rdf:type owl:NamedIndividual ,
+                air:设施状态 ;
+       rdfs:label "歪倒"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQ-0047-50m-to-YQ-0047-40m
+air:水工保护-YQ-0047-50m-to-YQ-0047-40m rdf:type owl:NamedIndividual ,
+                                             air:水工保护设施 ;
+                                    air:位于管道 air:永唐秦天然气管道 ;
+                                    air:审核人员 air:郑楚凡 ;
+                                    air:检测人员 air:时春利 ;
+                                    air:检测日期 "2025-06-17"^^xsd:date ;
+                                    air:水工保护终点桩号 "YQ-0047-40m" ;
+                                    air:水工保护起点桩号 "YQ-0047-50m" ;
+                                    air:水工保护长度 "10.0"^^xsd:double ;
+                                    air:环境描述 "农田，浆砌石护坡，长9米，宽10米，水工完好" ;
+                                    air:终点埋深 "1.8"^^xsd:double ;
+                                    air:起点埋深 "1.7"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQ-0060-to-YQ-0060-plus-15M
+air:水工保护-YQ-0060-to-YQ-0060-plus-15M rdf:type owl:NamedIndividual ,
+                                              air:水工保护设施 ;
+                                     air:位于管道 air:永唐秦天然气管道 ;
+                                     air:审核人员 air:郑楚凡 ;
+                                     air:检测人员 air:时春利 ;
+                                     air:检测日期 "2025-06-17"^^xsd:date ;
+                                     air:水工保护终点桩号 "YQ-0060-plus-15M" ;
+                                     air:水工保护起点桩号 "YQ-0060" ;
+                                     air:水工保护长度 "15.0"^^xsd:double ;
+                                     air:环境描述 "农田，浆砌石过水面及挡墙，长9米，宽2米，水工完好" ;
+                                     air:终点埋深 "2.2"^^xsd:double ;
+                                     air:起点埋深 "2.3"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQ-0094-to-YQ-0094-plus-15M
+air:水工保护-YQ-0094-to-YQ-0094-plus-15M rdf:type owl:NamedIndividual ,
+                                              air:水工保护设施 ;
+                                     air:位于管道 air:永唐秦天然气管道 ;
+                                     air:审核人员 air:郑楚凡 ;
+                                     air:检测人员 air:时春利 ;
+                                     air:检测日期 "2025-06-17"^^xsd:date ;
+                                     air:水工保护终点桩号 "YQ-0094-plus-15M" ;
+                                     air:水工保护起点桩号 "YQ-0094" ;
+                                     air:水工保护长度 "15.0"^^xsd:double ;
+                                     air:环境描述 "农田，混凝土护岸，长8米，宽3米，水工完好" ;
+                                     air:终点埋深 "1.8"^^xsd:double ;
+                                     air:起点埋深 "1.9"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQ-0096-to-YQ-0096-plus-20
+air:水工保护-YQ-0096-to-YQ-0096-plus-20 rdf:type owl:NamedIndividual ,
+                                             air:水工保护设施 ;
+                                    air:位于管道 air:永唐秦天然气管道 ;
+                                    air:审核人员 air:郑楚凡 ;
+                                    air:检测人员 air:时春利 ;
+                                    air:检测日期 "2025-06-17"^^xsd:date ;
+                                    air:水工保护终点桩号 "YQ-0096-plus-20" ;
+                                    air:水工保护起点桩号 "YQ-0096" ;
+                                    air:水工保护长度 "20.0"^^xsd:double ;
+                                    air:环境描述 "农田，混凝土护岸，长6米，宽3米，水工完好" ;
+                                    air:终点埋深 "2.0"^^xsd:double ;
+                                    air:起点埋深 "1.9"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQD-0042-80m-to-YQD-0042-60m
+air:水工保护-YQD-0042-80m-to-YQD-0042-60m rdf:type owl:NamedIndividual ,
+                                               air:水工保护设施 ;
+                                      air:位于管道 air:永唐秦天然气管道 ;
+                                      air:审核人员 air:郑楚凡 ;
+                                      air:检测人员 air:时春利 ;
+                                      air:检测日期 "2025-06-17"^^xsd:date ;
+                                      air:水工保护终点桩号 "YQD-0042-60m" ;
+                                      air:水工保护起点桩号 "YQD-0042-80m" ;
+                                      air:水工保护长度 "20.0"^^xsd:double ;
+                                      air:环境描述 "农田，浆砌石护岸，长6米，宽4米，水工完好" ;
+                                      air:终点埋深 "1.8"^^xsd:double ;
+                                      air:起点埋深 "1.9"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQG-0076-to-YQG-0076-plus-10M
+air:水工保护-YQG-0076-to-YQG-0076-plus-10M rdf:type owl:NamedIndividual ,
+                                                air:水工保护设施 ;
+                                       air:位于管道 air:永唐秦天然气管道 ;
+                                       air:审核人员 air:郑楚凡 ;
+                                       air:检测人员 air:时春利 ;
+                                       air:检测日期 "2025-06-17"^^xsd:date ;
+                                       air:水工保护终点桩号 "YQG-0076-plus-10M" ;
+                                       air:水工保护起点桩号 "YQG-0076" ;
+                                       air:水工保护长度 "10.0"^^xsd:double ;
+                                       air:环境描述 "农田，浆砌石护坡，长4米，宽2米，水工完好" ;
+                                       air:终点埋深 "3.1"^^xsd:double ;
+                                       air:起点埋深 "3.2"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQH-0103-100m-to-YQH-0103-50m
+air:水工保护-YQH-0103-100m-to-YQH-0103-50m rdf:type owl:NamedIndividual ,
+                                                air:水工保护设施 ;
+                                       air:位于管道 air:永唐秦天然气管道 ;
+                                       air:审核人员 air:郑楚凡 ;
+                                       air:检测人员 air:时春利 ;
+                                       air:检测日期 "2025-06-17"^^xsd:date ;
+                                       air:水工保护终点桩号 "YQH-0103-50m" ;
+                                       air:水工保护起点桩号 "YQH-0103-100m" ;
+                                       air:水工保护长度 "50.0"^^xsd:double ;
+                                       air:环境描述 "农田，浆砌石护坡，长20米，宽8米，水工完好" ;
+                                       air:终点埋深 "3.3"^^xsd:double ;
+                                       air:起点埋深 "4.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQP-0048-30m-to-YQP-0048-10m
+air:水工保护-YQP-0048-30m-to-YQP-0048-10m rdf:type owl:NamedIndividual ,
+                                               air:水工保护设施 ;
+                                      air:位于管道 air:永唐秦天然气管道 ;
+                                      air:审核人员 air:郑楚凡 ;
+                                      air:检测人员 air:时春利 ;
+                                      air:检测日期 "2025-06-17"^^xsd:date ;
+                                      air:水工保护终点桩号 "YQP-0048-10m" ;
+                                      air:水工保护起点桩号 "YQP-0048-30m" ;
+                                      air:水工保护长度 "20.0"^^xsd:double ;
+                                      air:环境描述 "农田，浆砌石护坡，长9米，宽8米，水工完好" ;
+                                      air:终点埋深 "1.9"^^xsd:double ;
+                                      air:起点埋深 "1.8"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/水工保护-YQP-0110-200m-to-YQP-0110-160m
+air:水工保护-YQP-0110-200m-to-YQP-0110-160m rdf:type owl:NamedIndividual ,
+                                                 air:水工保护设施 ;
+                                        air:位于管道 air:永唐秦天然气管道 ;
+                                        air:审核人员 air:郑楚凡 ;
+                                        air:检测人员 air:时春利 ;
+                                        air:检测日期 "2025-06-17"^^xsd:date ;
+                                        air:水工保护终点桩号 "YQP-0110-160m" ;
+                                        air:水工保护起点桩号 "YQP-0110-200m" ;
+                                        air:水工保护长度 "40.0"^^xsd:double ;
+                                        air:环境描述 "农田，混凝土护岸，长6米，宽5米，水工完好" ;
+                                        air:终点埋深 "2.4"^^xsd:double ;
+                                        air:起点埋深 "2.5"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/永唐秦1号阀室
+air:永唐秦1号阀室 rdf:type owl:NamedIndividual ,
+                     air:阀室 ;
+            air:位于管道 air:永唐秦天然气管道 ;
+            air:审核人员 air:郑楚凡 ;
+            air:检测人员 air:时春利 ;
+            air:阀室类型 air:RTU阀室 ;
+            air:描述 "监控阀室" ;
+            air:检测日期 "2025-06-17"^^xsd:date ;
+            air:阀室位置 "廊坊市安次区仇庄乡崔辛屯村" ;
+            air:阀室名称 "永唐秦1#阀室" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/永唐秦天然气管道
+air:永唐秦天然气管道 rdf:type owl:NamedIndividual ,
+                      air:管道 ;
+             air:归属单位 air:北京输油气分公司 ;
+             air:上次检验报告编号 "TJFGS-YTQ-NDJC-2024" ;
+             air:上次检验日期 "2024-05"^^xsd:gYearMonth ;
+             air:使用年限 16 ;
+             air:壁厚 "14.6"^^xsd:double ;
+             air:外径 "1016.0"^^xsd:double ;
+             air:安装单位 "/" ;
+             air:投用日期 "2009"^^xsd:gYear ;
+             air:操作压力 "5-9" ;
+             air:操作温度 "常温" ;
+             air:敷设方式 "直埋-plus-定向钻" ;
+             air:施工及验收规范 "《油气长输管道施工及验收规范》GB50369-2014" ;
+             air:管道名称 "永唐秦天然气管道" ;
+             air:管道材质 "L485" ;
+             air:管道级别 "GA1" ;
+             air:管道编号 "8120" ;
+             air:管道长度 "36.021"^^xsd:double ;
+             air:设计介质 "天然气" ;
+             air:设计单位 "/" ;
+             air:设计压力 "10.0"^^xsd:double ;
+             air:设计温度 "常温" ;
+             air:起止位置 "YQZ-0001至YQH-0189" ;
+             air:防腐层厚度 "4-5" ;
+             air:防腐层材料 "3PE" ;
+             air:验收日期 "2009-06"^^xsd:gYearMonth .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/永唐秦管道年度检查报告2025
+air:永唐秦管道年度检查报告2025 rdf:type owl:NamedIndividual ,
+                             air:年度检查报告 ;
+                    air:审核签名 air:郑楚凡 ;
+                    air:所属管道 air:永唐秦天然气管道 ;
+                    air:批准签名 air:郝东坡 ;
+                    air:校对签名 air:郑楚凡 ;
+                    air:检查结论 air:允许使用 ;
+                    air:检测签名 air:时春利 ;
+                    air:报告依据 "《压力管道定期检验规则—长输（油气）管道》TSG D7003-2022" ;
+                    air:报告编号 "BJFGS-YTQ-NDJC-2025" ;
+                    air:检验日期 "2025-06"^^xsd:gYearMonth ;
+                    air:检验类别 "年度检查" ;
+                    air:许用介质 "天然气" ;
+                    air:许用压力 "7.0"^^xsd:double ;
+                    air:许用温度 "常温" ;
+                    air:审核签名时间 "2025-06-20"^^xsd:date ;
+                    air:批准签名时间 "2025-06-27"^^xsd:date ;
+                    air:校对签名时间 "2025-06-20"^^xsd:date ;
+                    air:检测签名时间 "2025-06-17"^^xsd:date .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/永定河支流穿越
+air:永定河支流穿越 rdf:type owl:NamedIndividual ,
+                     air:穿越段 ;
+            air:位于管道 air:永唐秦天然气管道 ;
+            air:审核人员 air:郑楚凡 ;
+            air:检测人员 air:时春利 ;
+            air:穿越方式 air:大开挖 ;
+            air:检测日期 "2025-06-17"^^xsd:date ;
+            air:穿越段名称 "永定河支流" ;
+            air:穿越终点 "YQP-0149-plus-300m" ;
+            air:穿越起点 "YQP-0149-plus-240m" ;
+            air:穿越长度 "20.0"^^xsd:double ;
+            air:终点埋深 "2.1"^^xsd:double ;
+            air:终点电流值 "320.0"^^xsd:double ;
+            air:起点埋深 "2.0"^^xsd:double ;
+            air:起点电流值 "312.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/永定河穿越
+air:永定河穿越 rdf:type owl:NamedIndividual ,
+                   air:穿越段 ;
+          air:位于管道 air:永唐秦天然气管道 ;
+          air:审核人员 air:郑楚凡 ;
+          air:检测人员 air:时春利 ;
+          air:穿越方式 air:定向钻 ;
+          air:描述 "定向钻穿越永定河" ;
+          air:检测日期 "2025-06-17"^^xsd:date ;
+          air:穿越段名称 "永定河" ;
+          air:穿越终点 "YQH-0103" ;
+          air:穿越起点 "YQH-0102" ;
+          air:穿越长度 "833.0"^^xsd:double ;
+          air:终点埋深 "17.8"^^xsd:double ;
+          air:终点电流值 "375.0"^^xsd:double ;
+          air:起点埋深 "18.0"^^xsd:double ;
+          air:起点电流值 "370.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/泥石流区
+air:泥石流区 rdf:type owl:NamedIndividual ,
+                  air:地质灾害类型 ;
+         rdfs:label "泥石流区"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/津兴铁路穿越
+air:津兴铁路穿越 rdf:type owl:NamedIndividual ,
+                    air:穿越段 ;
+           air:位于管道 air:永唐秦天然气管道 ;
+           air:审核人员 air:郑楚凡 ;
+           air:检测人员 air:时春利 ;
+           air:穿越方式 air:大开挖 ;
+           air:检测日期 "2025-06-17"^^xsd:date ;
+           air:穿越段名称 "津兴铁路" ;
+           air:穿越终点 "YQD-0007-plus-20m" ;
+           air:穿越起点 "YQD-0007" ;
+           air:穿越长度 "20.0"^^xsd:double ;
+           air:终点埋深 "1.6"^^xsd:double ;
+           air:终点电流值 "310.0"^^xsd:double ;
+           air:起点埋深 "1.5"^^xsd:double ;
+           air:起点电流值 "325.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/活动断层
+air:活动断层 rdf:type owl:NamedIndividual ,
+                  air:地质灾害类型 ;
+         rdfs:label "活动断层"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/潜在崩塌滑坡区
+air:潜在崩塌滑坡区 rdf:type owl:NamedIndividual ,
+                     air:地质灾害类型 ;
+            rdfs:label "潜在崩塌滑坡区"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQL-0057
+air:电位测试-YQL-0057 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.9"^^xsd:double ;
+                  air:检测位置 "YQL-0057" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.593"^^xsd:double ;
+                  air:电位最正值 "-1.572"^^xsd:double ;
+                  air:电位最负值 "-1.621"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQL-0068
+air:电位测试-YQL-0068 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.46"^^xsd:double ;
+                  air:检测位置 "YQL-0068" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.614"^^xsd:double ;
+                  air:电位最正值 "-1.608"^^xsd:double ;
+                  air:电位最负值 "-1.625"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQL-0087
+air:电位测试-YQL-0087 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.88"^^xsd:double ;
+                  air:检测位置 "YQL-0087" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.576"^^xsd:double ;
+                  air:电位最正值 "-1.562"^^xsd:double ;
+                  air:电位最负值 "-1.587"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQL-0100
+air:电位测试-YQL-0100 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.87"^^xsd:double ;
+                  air:检测位置 "YQL-0100" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.482"^^xsd:double ;
+                  air:电位最正值 "-1.467"^^xsd:double ;
+                  air:电位最负值 "-1.513"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQL-0105
+air:电位测试-YQL-0105 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.73"^^xsd:double ;
+                  air:检测位置 "YQL-0105" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.495"^^xsd:double ;
+                  air:电位最正值 "-1.482"^^xsd:double ;
+                  air:电位最负值 "-1.525"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQL-0130
+air:电位测试-YQL-0130 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "3.0"^^xsd:double ;
+                  air:检测位置 "YQL-0130" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.523"^^xsd:double ;
+                  air:电位最正值 "-1.508"^^xsd:double ;
+                  air:电位最负值 "-1.546"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQL-0154
+air:电位测试-YQL-0154 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.83"^^xsd:double ;
+                  air:检测位置 "YQL-0154" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.438"^^xsd:double ;
+                  air:电位最正值 "-1.426"^^xsd:double ;
+                  air:电位最负值 "-1.451"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0015
+air:电位测试-YQP-0015 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.38"^^xsd:double ;
+                  air:检测位置 "YQP-0015" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.527"^^xsd:double ;
+                  air:电位最正值 "-1.503"^^xsd:double ;
+                  air:电位最负值 "-1.683"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0021
+air:电位测试-YQP-0021 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.33"^^xsd:double ;
+                  air:检测位置 "YQP-0021" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.572"^^xsd:double ;
+                  air:电位最正值 "-1.542"^^xsd:double ;
+                  air:电位最负值 "-1.622"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0025
+air:电位测试-YQP-0025 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.37"^^xsd:double ;
+                  air:备注 "正电位读数异常" ;
+                  air:检测位置 "YQP-0025" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "1.42"^^xsd:double ;
+                  air:电位最正值 "1.35"^^xsd:double ;
+                  air:电位最负值 "1.57"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0031
+air:电位测试-YQP-0031 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.34"^^xsd:double ;
+                  air:检测位置 "YQP-0031" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.515"^^xsd:double ;
+                  air:电位最正值 "-1.501"^^xsd:double ;
+                  air:电位最负值 "-1.558"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0039
+air:电位测试-YQP-0039 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.9"^^xsd:double ;
+                  air:检测位置 "YQP-0039" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.574"^^xsd:double ;
+                  air:电位最正值 "-1.543"^^xsd:double ;
+                  air:电位最负值 "-1.603"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0045
+air:电位测试-YQP-0045 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.93"^^xsd:double ;
+                  air:检测位置 "YQP-0045" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.585"^^xsd:double ;
+                  air:电位最正值 "-1.567"^^xsd:double ;
+                  air:电位最负值 "-1.618"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0048
+air:电位测试-YQP-0048 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.45"^^xsd:double ;
+                  air:检测位置 "YQP-0048" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.489"^^xsd:double ;
+                  air:电位最正值 "-1.472"^^xsd:double ;
+                  air:电位最负值 "-1.563"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0061
+air:电位测试-YQP-0061 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.96"^^xsd:double ;
+                  air:检测位置 "YQP-0061" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.524"^^xsd:double ;
+                  air:电位最正值 "-1.502"^^xsd:double ;
+                  air:电位最负值 "-1.563"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0066
+air:电位测试-YQP-0066 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.4"^^xsd:double ;
+                  air:检测位置 "YQP-0066" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.61"^^xsd:double ;
+                  air:电位最正值 "-1.604"^^xsd:double ;
+                  air:电位最负值 "-1.615"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0070
+air:电位测试-YQP-0070 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.53"^^xsd:double ;
+                  air:检测位置 "YQP-0070" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.565"^^xsd:double ;
+                  air:电位最正值 "-1.537"^^xsd:double ;
+                  air:电位最负值 "-1.591"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0073
+air:电位测试-YQP-0073 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.89"^^xsd:double ;
+                  air:备注 "正电位读数异常" ;
+                  air:检测位置 "YQP-0073" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "1.58"^^xsd:double ;
+                  air:电位最正值 "1.564"^^xsd:double ;
+                  air:电位最负值 "1.597"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0080
+air:电位测试-YQP-0080 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.09"^^xsd:double ;
+                  air:检测位置 "YQP-0080" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.574"^^xsd:double ;
+                  air:电位最正值 "-1.561"^^xsd:double ;
+                  air:电位最负值 "-1.582"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0084
+air:电位测试-YQP-0084 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.28"^^xsd:double ;
+                  air:检测位置 "YQP-0084" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.57"^^xsd:double ;
+                  air:电位最正值 "-1.557"^^xsd:double ;
+                  air:电位最负值 "-1.581"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0093
+air:电位测试-YQP-0093 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.9"^^xsd:double ;
+                  air:检测位置 "YQP-0093" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.52"^^xsd:double ;
+                  air:电位最正值 "-1.51"^^xsd:double ;
+                  air:电位最负值 "-1.532"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0097
+air:电位测试-YQP-0097 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.9"^^xsd:double ;
+                  air:检测位置 "YQP-0097" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.572"^^xsd:double ;
+                  air:电位最正值 "-1.442"^^xsd:double ;
+                  air:电位最负值 "-1.586"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0108
+air:电位测试-YQP-0108 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.23"^^xsd:double ;
+                  air:检测位置 "YQP-0108" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.501"^^xsd:double ;
+                  air:电位最正值 "-1.462"^^xsd:double ;
+                  air:电位最负值 "-1.538"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0110
+air:电位测试-YQP-0110 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.65"^^xsd:double ;
+                  air:检测位置 "YQP-0110" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.513"^^xsd:double ;
+                  air:电位最正值 "-1.496"^^xsd:double ;
+                  air:电位最负值 "-1.577"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0118
+air:电位测试-YQP-0118 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.56"^^xsd:double ;
+                  air:检测位置 "YQP-0118" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.542"^^xsd:double ;
+                  air:电位最正值 "-1.516"^^xsd:double ;
+                  air:电位最负值 "-1.573"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0131
+air:电位测试-YQP-0131 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.45"^^xsd:double ;
+                  air:检测位置 "YQP-0131" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.485"^^xsd:double ;
+                  air:电位最正值 "-1.462"^^xsd:double ;
+                  air:电位最负值 "-1.507"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0133
+air:电位测试-YQP-0133 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "3.0"^^xsd:double ;
+                  air:检测位置 "YQP-0133" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.517"^^xsd:double ;
+                  air:电位最正值 "-1.508"^^xsd:double ;
+                  air:电位最负值 "-1.526"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0137
+air:电位测试-YQP-0137 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.77"^^xsd:double ;
+                  air:检测位置 "YQP-0137" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.521"^^xsd:double ;
+                  air:电位最正值 "-1.512"^^xsd:double ;
+                  air:电位最负值 "-1.535"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0142
+air:电位测试-YQP-0142 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.15"^^xsd:double ;
+                  air:检测位置 "YQP-0142" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.492"^^xsd:double ;
+                  air:电位最正值 "-1.473"^^xsd:double ;
+                  air:电位最负值 "-1.513"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0144
+air:电位测试-YQP-0144 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.78"^^xsd:double ;
+                  air:检测位置 "YQP-0144" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.528"^^xsd:double ;
+                  air:电位最正值 "-1.515"^^xsd:double ;
+                  air:电位最负值 "-1.539"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0147
+air:电位测试-YQP-0147 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "2.63"^^xsd:double ;
+                  air:检测位置 "YQP-0147" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.42"^^xsd:double ;
+                  air:电位最正值 "-1.39"^^xsd:double ;
+                  air:电位最负值 "-1.56"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0151
+air:电位测试-YQP-0151 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.77"^^xsd:double ;
+                  air:检测位置 "YQP-0151" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.531"^^xsd:double ;
+                  air:电位最正值 "-1.527"^^xsd:double ;
+                  air:电位最负值 "-1.547"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0157
+air:电位测试-YQP-0157 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.86"^^xsd:double ;
+                  air:检测位置 "YQP-0157" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.527"^^xsd:double ;
+                  air:电位最正值 "-1.513"^^xsd:double ;
+                  air:电位最负值 "-1.536"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0159
+air:电位测试-YQP-0159 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.87"^^xsd:double ;
+                  air:检测位置 "YQP-0159" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.461"^^xsd:double ;
+                  air:电位最正值 "-1.442"^^xsd:double ;
+                  air:电位最负值 "-1.488"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0162
+air:电位测试-YQP-0162 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.86"^^xsd:double ;
+                  air:检测位置 "YQP-0162" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.469"^^xsd:double ;
+                  air:电位最正值 "-1.424"^^xsd:double ;
+                  air:电位最负值 "-1.496"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0166
+air:电位测试-YQP-0166 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.76"^^xsd:double ;
+                  air:检测位置 "YQP-0166" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.512"^^xsd:double ;
+                  air:电位最正值 "-1.503"^^xsd:double ;
+                  air:电位最负值 "-1.522"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0169
+air:电位测试-YQP-0169 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.81"^^xsd:double ;
+                  air:检测位置 "YQP-0169" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.558"^^xsd:double ;
+                  air:电位最正值 "-1.531"^^xsd:double ;
+                  air:电位最负值 "-1.575"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0174
+air:电位测试-YQP-0174 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.48"^^xsd:double ;
+                  air:检测位置 "YQP-0174" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.512"^^xsd:double ;
+                  air:电位最正值 "-1.503"^^xsd:double ;
+                  air:电位最负值 "-1.522"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0176
+air:电位测试-YQP-0176 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.55"^^xsd:double ;
+                  air:检测位置 "YQP-0176" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.558"^^xsd:double ;
+                  air:电位最正值 "-1.531"^^xsd:double ;
+                  air:电位最负值 "-1.575"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/电位测试-YQP-0188
+air:电位测试-YQP-0188 rdf:type owl:NamedIndividual ,
+                           air:电位测试数据 ;
+                  air:审核人员 air:郑楚凡 ;
+                  air:检测人员 air:时春利 ;
+                  air:埋深 "1.57"^^xsd:double ;
+                  air:检测位置 "YQP-0188" ;
+                  air:检测日期 "2025-06-15"^^xsd:date ;
+                  air:电位平均值 "-1.558"^^xsd:double ;
+                  air:电位最正值 "-1.531"^^xsd:double ;
+                  air:电位最负值 "-1.575"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/矿产地下采空区
+air:矿产地下采空区 rdf:type owl:NamedIndividual ,
+                     air:地质灾害类型 ;
+            rdfs:label "矿产地下采空区"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/码杨路穿越
+air:码杨路穿越 rdf:type owl:NamedIndividual ,
+                   air:穿越段 ;
+          air:位于管道 air:永唐秦天然气管道 ;
+          air:审核人员 air:郑楚凡 ;
+          air:检测人员 air:时春利 ;
+          air:穿越方式 air:顶管 ;
+          air:检测日期 "2025-06-17"^^xsd:date ;
+          air:穿越段名称 "码杨路" ;
+          air:穿越终点 "YQ-0124" ;
+          air:穿越起点 "YQG-0123" ;
+          air:穿越长度 "36.0"^^xsd:double ;
+          air:终点埋深 "4.1"^^xsd:double ;
+          air:终点电流值 "342.0"^^xsd:double ;
+          air:起点埋深 "4.1"^^xsd:double ;
+          air:起点电流值 "330.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/第三南大通道穿越
+air:第三南大通道穿越 rdf:type owl:NamedIndividual ,
+                      air:穿越段 ;
+             air:位于管道 air:永唐秦天然气管道 ;
+             air:审核人员 air:郑楚凡 ;
+             air:检测人员 air:时春利 ;
+             air:穿越方式 air:顶管 ;
+             air:检测日期 "2025-06-17"^^xsd:date ;
+             air:穿越段名称 "第三南大通道" ;
+             air:穿越终点 "YQ-0144" ;
+             air:穿越起点 "YQG-0143" ;
+             air:穿越长度 "75.0"^^xsd:double ;
+             air:终点埋深 "2.72"^^xsd:double ;
+             air:终点电流值 "307.0"^^xsd:double ;
+             air:起点埋深 "2.72"^^xsd:double ;
+             air:起点电流值 "315.0"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/箱涵
+air:箱涵 rdf:type owl:NamedIndividual ,
+                air:穿越方式 ;
+       rdfs:label "箱涵"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/绝缘装置测试-永唐秦1号阀室
+air:绝缘装置测试-永唐秦1号阀室 rdf:type owl:NamedIndividual ,
+                            air:绝缘装置测试数据 ;
+                   air:审核人员 air:郑楚凡 ;
+                   air:检测人员 air:时春利 ;
+                   air:保护侧电位 "-1.25"^^xsd:double ;
+                   air:检测日期 "2025-05"^^xsd:gYearMonth ;
+                   air:法兰位置 "上游" ;
+                   air:测试类型 "绝缘性能测试" ;
+                   air:站场阀室 "永唐秦1#阀室" ;
+                   air:非保护侧电位 "-0.69"^^xsd:double .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/膨胀土和盐渍土区
+air:膨胀土和盐渍土区 rdf:type owl:NamedIndividual ,
+                      air:地质灾害类型 ;
+             rdfs:label "膨胀土和盐渍土区"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/郑楚凡
+air:郑楚凡 rdf:type owl:NamedIndividual ,
+                 air:人员 ,
+                 air:审核员 ,
+                 air:校对员 ;
+        air:所属单位 air:北京输油气分公司 ;
+        air:姓名 "郑楚凡" ;
+        air:执业证号 "TSGR5678-2023" ;
+        air:职称 "高级工程师" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/郝东坡
+air:郝东坡 rdf:type owl:NamedIndividual ,
+                 air:人员 ,
+                 air:批准人 ;
+        air:所属单位 air:北京输油气分公司 ;
+        air:姓名 "郝东坡" ;
+        air:执业证号 "TSGR9012-2022" ;
+        air:职称 "高级工程师" .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/防腐层检测-永唐秦管道
+air:防腐层检测-永唐秦管道 rdf:type owl:NamedIndividual ,
+                         air:防腐层质量检测数据 ;
+                air:审核人员 air:郑楚凡 ;
+                air:检测人员 air:时春利 ;
+                air:检测日期 "2025-06-17"^^xsd:date ;
+                air:检测管段 "YQZ-000至YQH-0189" ;
+                air:检测管段长度 "36.021"^^xsd:double ;
+                air:电流衰减率 "0.0"^^xsd:double ;
+                air:电阻率 "0.0"^^xsd:double ;
+                air:破损点密度 "0.0"^^xsd:double ;
+                air:防腐层等级 air:一级 .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/需全面检验
+air:需全面检验 rdf:type owl:NamedIndividual ,
+                   air:检查结论 ;
+          rdfs:label "需进行全面检验"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/顶管
+air:顶管 rdf:type owl:NamedIndividual ,
+                air:穿越方式 ;
+       rdfs:label "顶管"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/风蚀沙埋区
+air:风蚀沙埋区 rdf:type owl:NamedIndividual ,
+                   air:地质灾害类型 ;
+          rdfs:label "风蚀沙埋区"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/黄土湿陷区
+air:黄土湿陷区 rdf:type owl:NamedIndividual ,
+                   air:地质灾害类型 ;
+          rdfs:label "黄土湿陷区"@zh .
+
+
+###  http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/104国道穿越
+<http://www.semanticweb.org/hongt/ontologies/2026/annual-inspection/104国道穿越> rdf:type owl:NamedIndividual ,
+                                                                                      air:穿越段 ;
+                                                                             air:位于管道 air:永唐秦天然气管道 ;
+                                                                             air:审核人员 air:郑楚凡 ;
+                                                                             air:检测人员 air:时春利 ;
+                                                                             air:穿越方式 air:顶管 ;
+                                                                             air:检测日期 "2025-06-17"^^xsd:date ;
+                                                                             air:穿越段名称 "104国道" ;
+                                                                             air:穿越终点 "YQ-0186" ;
+                                                                             air:穿越起点 "YQG-0180" ;
+                                                                             air:穿越长度 "369.0"^^xsd:double ;
+                                                                             air:终点埋深 "1.86"^^xsd:double ;
+                                                                             air:终点电流值 "302.0"^^xsd:double ;
+                                                                             air:起点埋深 "1.86"^^xsd:double ;
+                                                                             air:起点电流值 "295.0"^^xsd:double .
+
+
+[ xsd:minInclusive "0.0"^^xsd:double
+] .
+
+[ xsd:minInclusive "0.0"^^xsd:double
+ ] .
+
+#################################################################
+#    Annotations
+#################################################################
+
+air:地质灾害类型 rdfs:label "地质灾害类型"@zh .
+
+
+air:检查结论 rdfs:label "检查结论"@zh .
+
+
+air:穿越方式 rdfs:label "穿越方式"@zh .
+
+
+air:设施状态 rdfs:comment "设施的当前状态（正常/损坏/歪倒）"@zh ;
+         rdfs:label "设施状态"@zh .
+
+
+air:阀室类型 rdfs:label "阀室类型"@zh .
+
+
+air:防腐层等级 rdfs:label "防腐层等级"@zh .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi

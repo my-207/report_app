@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年度检查报告自动填充 - 产品逻辑图</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --bg: #f0f4f8;
+    --card-bg: #ffffff;
+    --primary: #1a73e8;
+    --primary-light: #e8f0fe;
+    --accent-parse: #7c3aed;
+    --accent-parse-light: #f3e8ff;
+    --accent-onto: #0d9488;
+    --accent-onto-light: #e6fffa;
+    --accent-graph: #ea580c;
+    --accent-graph-light: #fff7ed;
+    --accent-analyze: #2563eb;
+    --accent-analyze-light: #eff6ff;
+    --accent-fill: #059669;
+    --accent-fill-light: #ecfdf5;
+    --accent-verify: #d97706;
+    --accent-verify-light: #fffbeb;
+    --accent-review: #dc2626;
+    --accent-review-light: #fef2f2;
+    --accent-output: #4f46e5;
+    --accent-output-light: #eef2ff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,.1), 0 4px 8px rgba(0,0,0,.06);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #eef2ff 0%, #f0f4ff 25%, #f5f3ff 50%, #fefce8 75%, #f0fdf4 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: var(--text);
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #1a73e8, #4f46e5);
+    color: #fff;
+    padding: 6px 18px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    letter-spacing: .5px;
+  }
+
+  .header .badge .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #34d399;
+    animation: pulse-dot 2s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(1.5); }
+  }
+
+  .header h1 {
+    font-size: 36px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 60%, #475569 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -.5px;
+    line-height: 1.3;
+  }
+
+  .header .subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-weight: 400;
+  }
+
+  /* ─── Main Flow ─── */
+  .main-flow {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 16px 0 40px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .main-flow::-webkit-scrollbar { height: 6px; }
+  .main-flow::-webkit-scrollbar-track { background: transparent; }
+  .main-flow::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .node-card {
+    width: 180px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 24px 16px 20px;
+    text-align: center;
+    position: relative;
+    transition: transform .2s, box-shadow .2s;
+    cursor: default;
+  }
+
+  .node-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .node-card .icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 24px;
+  }
+
+  .node-card .node-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .node-card .node-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Node color variants */
+  .node-parse .icon-wrap { background: var(--accent-parse-light); }
+  .node-parse { border-top: 3px solid var(--accent-parse); }
+  .node-parse .node-title { color: var(--accent-parse); }
+
+  .node-onto .icon-wrap { background: var(--accent-onto-light); }
+  .node-onto { border-top: 3px solid var(--accent-onto); }
+  .node-onto .node-title { color: var(--accent-onto); }
+
+  .node-graph .icon-wrap { background: var(--accent-graph-light); }
+  .node-graph { border-top: 3px solid var(--accent-graph); }
+  .node-graph .node-title { color: var(--accent-graph); }
+
+  .node-analyze .icon-wrap { background: var(--accent-analyze-light); }
+  .node-analyze { border-top: 3px solid var(--accent-analyze); }
+  .node-analyze .node-title { color: var(--accent-analyze); }
+
+  .node-fill .icon-wrap { background: var(--accent-fill-light); }
+  .node-fill { border-top: 3px solid var(--accent-fill); }
+  .node-fill .node-title { color: var(--accent-fill); }
+
+  .node-verify .icon-wrap { background: var(--accent-verify-light); }
+  .node-verify { border-top: 3px solid var(--accent-verify); }
+  .node-verify .node-title { color: var(--accent-verify); }
+
+  .node-review .icon-wrap { background: var(--accent-review-light); }
+  .node-review { border-top: 3px solid var(--accent-review); }
+  .node-review .node-title { color: var(--accent-review); }
+
+  .node-output .icon-wrap { background: var(--accent-output-light); }
+  .node-output { border-top: 3px solid var(--accent-output); }
+  .node-output .node-title { color: var(--accent-output); }
+
+  /* Arrows between nodes */
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 4px;
+  }
+
+  .flow-arrow .arrow-line {
+    width: 36px;
+    height: 2px;
+    background: linear-gradient(90deg, #cbd5e1, #94a3b8);
+    position: relative;
+  }
+
+  .flow-arrow .arrow-head {
+    width: 0; height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 10px solid #94a3b8;
+  }
+
+  /* ─── Sub-layers ─── */
+  .layers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  @media (max-width: 1100px) {
+    .layers { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .layers { grid-template-columns: 1fr; }
+    .main-flow { flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .flow-arrow { display: none; }
+  }
+
+  .layer-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 20px 20px 16px;
+    border: 1px solid var(--border);
+    transition: box-shadow .2s;
+  }
+
+  .layer-card:hover { box-shadow: var(--shadow-md); }
+
+  .layer-card .layer-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .layer-card .layer-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .layer-card .layer-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .layer-card .layer-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .layer-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition: all .15s;
+  }
+
+  .layer-step:hover {
+    background: #fff;
+    border-color: var(--border);
+  }
+
+  .layer-step .step-num {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ─── Data flow diagram ─── */
+  .data-flow {
+    margin-top: 40px;
+  }
+
+  .data-flow h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .data-flow h2::before {
+    content: '';
+    width: 4px; height: 24px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .data-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: all .2s;
+  }
+
+  .data-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .data-card .data-icon {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .data-card .data-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .data-card .data-detail {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ─── Legend ─── */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 36px;
+    padding: 16px;
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">
+      <span class="dot"></span> 数字员工 · 知识图谱驱动
+    </div>
+    <h1>年度检查报告自动填充<br>产品逻辑全景图</h1>
+    <p class="subtitle">解析 → 建本体 → 入图 → 分析模板 → 提取数据 → 填充报告 → 校验标注 → 人工复核</p>
+  </div>
+
+  <!-- Main Flow -->
+  <div class="main-flow">
+    <!-- ① 解析报告 -->
+    <div class="flow-node">
+      <div class="node-card node-parse">
+        <div class="icon-wrap">📄</div>
+        <div class="node-title">解析报告文档</div>
+        <div class="node-desc">PDF / Word<br>分子公司报告</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ② 定义本体 + 提取数据 -->
+    <div class="flow-node">
+      <div class="node-card node-onto">
+        <div class="icon-wrap">🧠</div>
+        <div class="node-title">大模型辅助<br>定义本体</div>
+        <div class="node-desc">实体·关系·属性<br>语义建模</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ③ 入图数据库 -->
+    <div class="flow-node">
+      <div class="node-card node-graph">
+        <div class="icon-wrap">🕸️</div>
+        <div class="node-title">数据入图</div>
+        <div class="node-desc">图数据库存储<br>知识图谱</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ④ 分析模板 -->
+    <div class="flow-node">
+      <div class="node-card node-analyze">
+        <div class="icon-wrap">🔍</div>
+        <div class="node-title">分析报告模板</div>
+        <div class="node-desc">大模型分析<br>提取所需字段</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ⑤ 提取数据 -->
+    <div class="flow-node">
+      <div class="node-card node-graph">
+        <div class="icon-wrap">📤</div>
+        <div class="node-title">提取模板数据</div>
+        <div class="node-desc">从图数据库<br>查询所需数据</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ⑥ 填入模板 -->
+    <div class="flow-node">
+      <div class="node-card node-fill">
+        <div class="icon-wrap">✍️</div>
+        <div class="node-title">填入报告模板</div>
+        <div class="node-desc">XML 直接操作<br>生成 Word 报告</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ⑦ 数据校验 -->
+    <div class="flow-node">
+      <div class="node-card node-verify">
+        <div class="icon-wrap">✅</div>
+        <div class="node-title">数据校验</div>
+        <div class="node-desc">完整性·一致性<br>格式校验</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ⑧ 异常标注 -->
+    <div class="flow-node">
+      <div class="node-card node-review">
+        <div class="icon-wrap">⚠️</div>
+        <div class="node-title">异常数据标注</div>
+        <div class="node-desc">标记缺失·冲突<br>异常数据项</div>
+      </div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ⑨ 人工复核 -->
+    <div class="flow-node">
+      <div class="node-card node-output">
+        <div class="icon-wrap">👤</div>
+        <div class="node-title">人工复核</div>
+        <div class="node-desc">审查异常标注<br>确认报告准确性</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四层架构 -->
+  <div class="layers">
+    <!-- 第 1 层：数据接入层 -->
+    <div class="layer-card">
+      <div class="layer-header">
+        <div class="layer-dot" style="background: var(--accent-parse);"></div>
+        <span class="layer-title">数据接入层</span>
+      </div>
+      <div class="layer-steps">
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-parse);">1</span>
+          <span>接收分子公司提交的 PDF / Word 年度检查报告文档</span>
+        </div>
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-parse);">2</span>
+          <span>文档格式解析：PDF 文本抽取、Word XML 结构化解析</span>
+        </div>
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-parse);">3</span>
+          <span>多源文档归一化处理，消除格式差异</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第 2 层：知识构建层 -->
+    <div class="layer-card">
+      <div class="layer-header">
+        <div class="layer-dot" style="background: var(--accent-onto);"></div>
+        <span class="layer-title">知识构建层</span>
+      </div>
+      <div class="layer-steps">
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-onto);">4</span>
+          <span>大模型辅助定义领域本体（管道·阀门·检测项目·报告等实体与关系）</span>
+        </div>
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-onto);">5</span>
+          <span>基于本体从文档中提取结构化数据（实体识别·关系抽取·属性填充）</span>
+        </div>
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-onto);">6</span>
+          <span>数据写入图数据库，构建管道年度检查知识图谱</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第 3 层：报告生成层 -->
+    <div class="layer-card">
+      <div class="layer-header">
+        <div class="layer-dot" style="background: var(--accent-fill);"></div>
+        <span class="layer-title">报告生成层</span>
+      </div>
+      <div class="layer-steps">
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-analyze);">7</span>
+          <span>大模型分析年度检查报告模板，识别占位符与所需数据字段</span>
+        </div>
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-graph);">8</span>
+          <span>到图数据库查询模板所需数据（键值对·列表·签名等）</span>
+        </div>
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-fill);">9</span>
+          <span>XML 直接操作填入 Word 模板，生成年度检查报告</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第 4 层：质量保障层 -->
+    <div class="layer-card">
+      <div class="layer-header">
+        <div class="layer-dot" style="background: var(--accent-review);"></div>
+        <span class="layer-title">质量保障层</span>
+      </div>
+      <div class="layer-steps">
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-verify);">10</span>
+          <span>对填入数据进行完整性、一致性、格式规范性校验</span>
+        </div>
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-review);">11</span>
+          <span>异常数据自动标注（缺失字段·数据冲突·格式异常）</span>
+        </div>
+        <div class="layer-step">
+          <span class="step-num" style="background: var(--accent-output);">12</span>
+          <span>人工复核标注的异常数据，确认并修正报告准确性</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 数据流转示意 -->
+  <div class="data-flow">
+    <h2>核心数据流转</h2>
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="data-icon">📥</div>
+        <div class="data-name">输入：分子公司报告</div>
+        <div class="data-detail">PDF / Word 格式的年度检查原始报告，来自各分子公司</div>
+      </div>
+      <div class="data-card">
+        <div class="data-icon">📋</div>
+        <div class="data-name">本体定义</div>
+        <div class="data-detail">大模型辅助建模：管道、阀门、检测项目、报告等实体及关联关系</div>
+      </div>
+      <div class="data-card">
+        <div class="data-icon">🕸️</div>
+        <div class="data-name">图数据库</div>
+        <div class="data-detail">知识图谱存储引擎，承载结构化检测数据与语义关系</div>
+      </div>
+      <div class="data-card">
+        <div class="data-icon">📝</div>
+        <div class="data-name">报告模板</div>
+        <div class="data-detail">Word 年度检查报告模板，含占位符与表格框架</div>
+      </div>
+      <div class="data-card">
+        <div class="data-icon">🔗</div>
+        <div class="data-name">模板分析结果</div>
+        <div class="data-detail">大模型分析后输出的字段映射表：占位符→数据字段→查询语句</div>
+      </div>
+      <div class="data-card">
+        <div class="data-icon">📊</div>
+        <div class="data-name">填充数据</div>
+        <div class="data-detail">从图数据库提取的结构化数据：键值对、列表表格、签名行</div>
+      </div>
+      <div class="data-card">
+        <div class="data-icon">📄</div>
+        <div class="data-name">输出：年度检查报告</div>
+        <div class="data-detail">填充完成的 Word 报告，含校验标注供人工复核</div>
+      </div>
+      <div class="data-card">
+        <div class="data-icon">🏷️</div>
+        <div class="data-name">异常标注清单</div>
+        <div class="data-detail">缺失字段、数据冲突、格式异常等标注，辅助人工审查</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-parse);"></span> 解析</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-onto);"></span> 本体 &amp; 知识构建</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-graph);"></span> 图数据库 &amp; 提取</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-analyze);"></span> 模板分析</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-fill);"></span> 报告填充</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-verify);"></span> 校验</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-review);"></span> 异常标注</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-output);"></span> 人工复核</div>
+  </div>
+
+  <div class="footer">
+    年度检查报告自动填充系统 · 数字员工 · 知识图谱驱动 · v2.0
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+server/uploads/
+server/output/
+server/sessions/
+server/*.log
+server/test-phase2*/
+_analysis/
+_check_output/
+output/
+*.docx
+.1
+.1n
+console.error*
+0)*
+

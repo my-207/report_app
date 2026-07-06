@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年度检查报告自动填充 - 系统架构图</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0b1120;
+    --card-bg: #111827;
+    --card-bg-2: #1a2332;
+    --border: #1e2d3d;
+    --border-light: #2a3a4e;
+    --text: #e2e8f0;
+    --text-muted: #8899aa;
+    --text-dim: #5a6e82;
+
+    --purple: #a78bfa;
+    --purple-bg: rgba(167,139,250,.12);
+    --purple-border: rgba(167,139,250,.3);
+    --teal: #2dd4bf;
+    --teal-bg: rgba(45,212,191,.12);
+    --teal-border: rgba(45,212,191,.3);
+    --orange: #fb923c;
+    --orange-bg: rgba(251,146,60,.12);
+    --orange-border: rgba(251,146,60,.3);
+    --blue: #60a5fa;
+    --blue-bg: rgba(96,165,250,.12);
+    --blue-border: rgba(96,165,250,.3);
+    --emerald: #34d399;
+    --emerald-bg: rgba(52,211,153,.12);
+    --emerald-border: rgba(52,211,153,.3);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,.12);
+    --amber-border: rgba(251,191,36,.3);
+    --rose: #fb7185;
+    --rose-bg: rgba(251,113,133,.12);
+    --rose-border: rgba(251,113,133,.3);
+    --indigo: #818cf8;
+    --indigo-bg: rgba(129,140,248,.12);
+    --indigo-border: rgba(129,140,248,.3);
+    --cyan: #22d3ee;
+    --cyan-bg: rgba(34,211,238,.12);
+    --cyan-border: rgba(34,211,238,.3);
+
+    --radius: 12px;
+    --radius-lg: 18px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 24px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(129,140,248,.2), rgba(96,165,250,.2));
+    border: 1px solid var(--indigo-border);
+    color: var(--indigo);
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    letter-spacing: .5px;
+  }
+
+  .header .badge .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--indigo);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+  }
+
+  .header h1 {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -.5px;
+    background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .3px;
+  }
+
+  /* ─── Architecture Stack ─── */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+  }
+
+  .layer {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    position: relative;
+    transition: border-color .2s;
+  }
+
+  .layer:hover {
+    border-color: var(--border-light);
+  }
+
+  .layer-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .layer-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .layer-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 2px;
+  }
+
+  .layer-name {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .layer-blocks {
+    display: grid;
+    gap: 12px;
+  }
+
+  /* Layer-specific */
+  .layer-presentation {
+    background: linear-gradient(135deg, rgba(129,140,248,.06), rgba(129,140,248,.02));
+  }
+  .layer-presentation .layer-icon { background: var(--indigo-bg); }
+  .layer-presentation .layer-label { color: var(--indigo); }
+  .layer-presentation .layer-name { color: var(--indigo); }
+
+  .layer-business {
+    background: linear-gradient(135deg, rgba(96,165,250,.06), rgba(96,165,250,.02));
+  }
+  .layer-business .layer-icon { background: var(--blue-bg); }
+  .layer-business .layer-label { color: var(--blue); }
+  .layer-business .layer-name { color: var(--blue); }
+
+  .layer-service {
+    background: linear-gradient(135deg, rgba(52,211,153,.06), rgba(52,211,153,.02));
+  }
+  .layer-service .layer-icon { background: var(--emerald-bg); }
+  .layer-service .layer-label { color: var(--emerald); }
+  .layer-service .layer-name { color: var(--emerald); }
+
+  .layer-knowledge {
+    background: linear-gradient(135deg, rgba(167,139,250,.06), rgba(167,139,250,.02));
+  }
+  .layer-knowledge .layer-icon { background: var(--purple-bg); }
+  .layer-knowledge .layer-label { color: var(--purple); }
+  .layer-knowledge .layer-name { color: var(--purple); }
+
+  .layer-data {
+    background: linear-gradient(135deg, rgba(251,146,60,.06), rgba(251,146,60,.02));
+  }
+  .layer-data .layer-icon { background: var(--orange-bg); }
+  .layer-data .layer-label { color: var(--orange); }
+  .layer-data .layer-name { color: var(--orange); }
+
+  .layer-infra {
+    background: linear-gradient(135deg, rgba(34,211,238,.06), rgba(34,211,238,.02));
+  }
+  .layer-infra .layer-icon { background: var(--cyan-bg); }
+  .layer-infra .layer-label { color: var(--cyan); }
+  .layer-infra .layer-name { color: var(--cyan); }
+
+  /* ─── Blocks ─── */
+  .blocks-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .block {
+    background: var(--card-bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    flex: 1;
+    min-width: 160px;
+    max-width: 260px;
+    transition: border-color .2s, transform .15s;
+    position: relative;
+  }
+
+  .block:hover {
+    border-color: var(--border-light);
+    transform: translateY(-2px);
+  }
+
+  .block .block-icon {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .block .block-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .block .block-tech {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .block .block-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* Block color accents */
+  .block-purple { border-left: 3px solid var(--purple); }
+  .block-purple .block-title { color: var(--purple); }
+
+  .block-teal { border-left: 3px solid var(--teal); }
+  .block-teal .block-title { color: var(--teal); }
+
+  .block-orange { border-left: 3px solid var(--orange); }
+  .block-orange .block-title { color: var(--orange); }
+
+  .block-blue { border-left: 3px solid var(--blue); }
+  .block-blue .block-title { color: var(--blue); }
+
+  .block-emerald { border-left: 3px solid var(--emerald); }
+  .block-emerald .block-title { color: var(--emerald); }
+
+  .block-amber { border-left: 3px solid var(--amber); }
+  .block-amber .block-title { color: var(--amber); }
+
+  .block-rose { border-left: 3px solid var(--rose); }
+  .block-rose .block-title { color: var(--rose); }
+
+  .block-indigo { border-left: 3px solid var(--indigo); }
+  .block-indigo .block-title { color: var(--indigo); }
+
+  .block-cyan { border-left: 3px solid var(--cyan); }
+  .block-cyan .block-title { color: var(--cyan); }
+
+  /* ─── Side panels ─── */
+  .side-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  @media (max-width: 900px) {
+    .side-panels { grid-template-columns: 1fr; }
+    .blocks-row { flex-direction: column; }
+    .block { max-width: none; }
+  }
+
+  .panel {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    background: var(--card-bg);
+  }
+
+  .panel h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel h3 .icon {
+    font-size: 16px;
+  }
+
+  .flow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .flow-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    padding: 8px 10px;
+    background: var(--card-bg-2);
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: border-color .15s;
+  }
+
+  .flow-item:hover { border-color: var(--border); }
+
+  .flow-num {
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ─── Legend ─── */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 14px 20px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">
+      <span class="dot"></span> 年度检查报告自动填充 · 系统架构
+    </div>
+    <h1>产品系统架构图</h1>
+    <p class="subtitle">Architecture Overview — Knowledge Graph Driven Report Generation</p>
+  </div>
+
+  <!-- Architecture Stack -->
+  <div class="stack">
+
+    <!-- ① 表现层 -->
+    <div class="layer layer-presentation">
+      <div class="layer-header">
+        <div class="layer-icon">🖥️</div>
+        <div>
+          <div class="layer-label">Layer 1</div>
+          <div class="layer-name">表现层 Presentation</div>
+        </div>
+      </div>
+      <div class="blocks-row">
+        <div class="block block-indigo">
+          <div class="block-icon">🌐</div>
+          <div class="block-title">Web 前端控制台</div>
+          <div class="block-tech">HTML5 / CSS3 / Vanilla JS</div>
+          <div class="block-desc">双源上传、数据预览、进度动画、报告下载</div>
+        </div>
+        <div class="block block-indigo">
+          <div class="block-icon">📡</div>
+          <div class="block-title">管理 API 网关</div>
+          <div class="block-tech">Express REST API</div>
+          <div class="block-desc">数字员工注册、健康检查、任务查询、Webhook 回调</div>
+        </div>
+        <div class="block block-indigo">
+          <div class="block-icon">🔌</div>
+          <div class="block-title">外部系统集成</div>
+          <div class="block-tech">Webhook / HTTP Client</div>
+          <div class="block-desc">对接数字员工管理系统，异步任务通知</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 业务逻辑层 -->
+    <div class="layer layer-business">
+      <div class="layer-header">
+        <div class="layer-icon">⚙️</div>
+        <div>
+          <div class="layer-label">Layer 2</div>
+          <div class="layer-name">业务逻辑层 Business Logic</div>
+        </div>
+      </div>
+      <div class="blocks-row">
+        <div class="block block-blue">
+          <div class="block-icon">📋</div>
+          <div class="block-title">任务调度引擎</div>
+          <div class="block-tech">TaskService · State Machine</div>
+          <div class="block-desc">pending → running → completed/failed，支持异步与同步模式</div>
+        </div>
+        <div class="block block-blue">
+          <div class="block-icon">📝</div>
+          <div class="block-title">模板管理服务</div>
+          <div class="block-tech">TemplateService</div>
+          <div class="block-desc">模板上传/缓存、占位符分析、表头提取、Session 管理</div>
+        </div>
+        <div class="block block-blue">
+          <div class="block-icon">🔍</div>
+          <div class="block-title">大模型模板分析</div>
+          <div class="block-tech">LLM-Assisted Analysis</div>
+          <div class="block-desc">分析报告模板结构，识别占位符字段、表格映射关系</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 核心服务层 -->
+    <div class="layer layer-service">
+      <div class="layer-header">
+        <div class="layer-icon">🔧</div>
+        <div>
+          <div class="layer-label">Layer 3</div>
+          <div class="layer-name">核心服务层 Core Services</div>
+        </div>
+      </div>
+      <div class="blocks-row">
+        <div class="block block-emerald">
+          <div class="block-icon">📄</div>
+          <div class="block-title">文档解析引擎</div>
+          <div class="block-tech">python-docx / XML Parser</div>
+          <div class="block-desc">Word .docx 解包/打包，XML 结构提取，PDF 文本抽取</div>
+        </div>
+        <div class="block block-emerald">
+          <div class="block-icon">🧬</div>
+          <div class="block-title">知识图谱解析器</div>
+          <div class="block-tech">JSON-LD / TTL Parser</div>
+          <div class="block-desc">.rj / .ttl 解析，实体识别，属性映射，章节分组</div>
+        </div>
+        <div class="block block-emerald">
+          <div class="block-icon">✍️</div>
+          <div class="block-title">报告填充引擎</div>
+          <div class="block-tech">FillerService · XML Direct</div>
+          <div class="block-desc">占位符替换、键值对填充、列表表格填充、签名行填充</div>
+        </div>
+        <div class="block block-emerald">
+          <div class="block-icon">🔄</div>
+          <div class="block-title">子树复制插入器</div>
+          <div class="block-tech">SubtreeInserter</div>
+          <div class="block-desc">源表格 XML 子树复制，表头匹配，行模板克隆，单元格合并</div>
+        </div>
+        <div class="block block-emerald">
+          <div class="block-icon">✅</div>
+          <div class="block-title">数据校验服务</div>
+          <div class="block-tech">Validation Engine</div>
+          <div class="block-desc">完整性校验、格式校验、数据一致性检查、异常标注</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ 知识层 -->
+    <div class="layer layer-knowledge">
+      <div class="layer-header">
+        <div class="layer-icon">🧠</div>
+        <div>
+          <div class="layer-label">Layer 4</div>
+          <div class="layer-name">知识层 Knowledge</div>
+        </div>
+      </div>
+      <div class="blocks-row">
+        <div class="block block-purple">
+          <div class="block-icon">🏗️</div>
+          <div class="block-title">领域本体模型</div>
+          <div class="block-tech">OWL / TTL Ontology</div>
+          <div class="block-desc">管道、阀门、检测项目、报告、组织等实体与关系定义</div>
+        </div>
+        <div class="block block-purple">
+          <div class="block-icon">🕸️</div>
+          <div class="block-title">图数据库</div>
+          <div class="block-tech">GraphDB / RDF Store</div>
+          <div class="block-desc">知识图谱存储，SPARQL 查询，语义推理，实体链接</div>
+        </div>
+        <div class="block block-purple">
+          <div class="block-icon">🤖</div>
+          <div class="block-title">大模型服务</div>
+          <div class="block-tech">LLM API</div>
+          <div class="block-desc">本体辅助定义、实体关系抽取、模板语义分析、数据提取</div>
+        </div>
+        <div class="block block-purple">
+          <div class="block-icon">🗺️</div>
+          <div class="block-title">属性映射表</div>
+          <div class="block-tech">Property Map Config</div>
+          <div class="block-desc">知识图谱属性 → 报告字段映射，列顺序配置</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ 数据层 -->
+    <div class="layer layer-data">
+      <div class="layer-header">
+        <div class="layer-icon">💾</div>
+        <div>
+          <div class="layer-label">Layer 5</div>
+          <div class="layer-name">数据层 Data</div>
+        </div>
+      </div>
+      <div class="blocks-row">
+        <div class="block block-orange">
+          <div class="block-icon">📁</div>
+          <div class="block-title">文件存储</div>
+          <div class="block-tech">Local FS · TTL Cleanup</div>
+          <div class="block-desc">模板缓存、上传暂存、输出文件，1小时自动清理</div>
+        </div>
+        <div class="block block-orange">
+          <div class="block-icon">📊</div>
+          <div class="block-title">会话状态</div>
+          <div class="block-tech">In-Memory Map</div>
+          <div class="block-desc">Session 管理、模板解包缓存、任务状态追踪</div>
+        </div>
+        <div class="block block-orange">
+          <div class="block-icon">📋</div>
+          <div class="block-title">源文档缓存</div>
+          <div class="block-tech">XML Fragment Cache</div>
+          <div class="block-desc">解包后 XML 结构缓存，避免重复解析</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑥ 基础设施层 -->
+    <div class="layer layer-infra">
+      <div class="layer-header">
+        <div class="layer-icon">🏗️</div>
+        <div>
+          <div class="layer-label">Layer 6</div>
+          <div class="layer-name">基础设施层 Infrastructure</div>
+        </div>
+      </div>
+      <div class="blocks-row">
+        <div class="block block-cyan">
+          <div class="block-icon">🖥️</div>
+          <div class="block-title">Node.js 运行时</div>
+          <div class="block-tech">Node.js 18+ · TypeScript</div>
+          <div class="block-desc">Express 服务，端口 3100，ts-node-dev 热重载</div>
+        </div>
+        <div class="block block-cyan">
+          <div class="block-icon">🐍</div>
+          <div class="block-title">Python 工具链</div>
+          <div class="block-tech">python-docx · unpack/pack</div>
+          <div class="block-desc">Word XML 解包/打包，PowerShell 回退方案</div>
+        </div>
+        <div class="block block-cyan">
+          <div class="block-icon">📦</div>
+          <div class="block-title">中间件层</div>
+          <div class="block-tech">Express / CORS / Multer</div>
+          <div class="block-desc">文件上传处理、跨域支持、静态资源服务</div>
+        </div>
+        <div class="block block-cyan">
+          <div class="block-icon">📝</div>
+          <div class="block-title">日志与监控</div>
+          <div class="block-tech">Logger · Health Check</div>
+          <div class="block-desc">彩色控制台输出、健康状态上报、内存监控</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Side panels -->
+  <div class="side-panels">
+    <!-- 数据流 -->
+    <div class="panel">
+      <h3><span class="icon">🔄</span> 核心数据流</h3>
+      <div class="flow-list">
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--indigo);">1</span>
+          <span>用户上传 Word 报告模板 (.docx) + 数据源 (.rj / 原始MD.docx)</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--emerald);">2</span>
+          <span>模板解包 → XML 结构提取 → 占位符 &amp; 表格分析</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--purple);">3</span>
+          <span>.rj 知识图谱解析 → 实体提取 → 属性映射 → 章节表格构建</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--teal);">4</span>
+          <span>原始MD.docx 解析 → 键值对提取 → 签名行提取 → 章节分组</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--blue);">5</span>
+          <span>双源数据合并 → 表头模糊匹配 → 模板-数据表格对应</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--emerald);">6</span>
+          <span>XML 直接填充：占位符替换 → 键值对填充 → 列表行填充 → 签名行填充</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--amber);">7</span>
+          <span>数据校验 → 异常字段标注 → 生成校验报告</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--rose);">8</span>
+          <span>XML 打包 → 生成 Word 报告 → 下载 / 推送 + 异常标注清单</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- API 接口 -->
+    <div class="panel">
+      <h3><span class="icon">📡</span> API 接口矩阵</h3>
+      <div class="flow-list">
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--blue);">POST</span>
+          <span><b>/api/upload-template</b> — 上传 .docx 模板，返回 sessionId</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--blue);">POST</span>
+          <span><b>/api/upload-rj</b> — 上传 .rj 知识图谱，返回解析预览</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--blue);">POST</span>
+          <span><b>/api/upload-source-docx</b> — 上传原始MD.docx 作为补充源</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--emerald);">POST</span>
+          <span><b>/fill-by-copy</b> — 核心：双源子树复制填充，生成报告</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--emerald);">GET</span>
+          <span><b>/api/download/:file</b> — 下载生成的年度检查报告</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--indigo);">GET</span>
+          <span><b>/api/employee/info</b> — 数字员工元数据查询</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--indigo);">GET</span>
+          <span><b>/api/health</b> — 健康检查：状态、内存、任务数</span>
+        </div>
+        <div class="flow-item">
+          <span class="flow-num" style="background: var(--amber);">POST</span>
+          <span><b>/api/task/execute</b> — 异步任务执行 + Webhook 回调</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background: var(--indigo);"></span> 表现层</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--blue);"></span> 业务逻辑层</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--emerald);"></span> 核心服务层</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--purple);"></span> 知识层</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--orange);"></span> 数据层</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--cyan);"></span> 基础设施层</div>
+  </div>
+
+  <div class="footer">
+    Annual Inspection Report Auto-Filler · Architecture v2.0 · Knowledge Graph Driven
+  </div>
+
+</div>
+
+</body>
+</html>

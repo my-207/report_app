@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年度检查报告自动填充 - 业务功能架构图</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap');
+
+  :root {
+    --bg: #fafbfc;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-muted: #5a6a7e;
+    --text-dim: #8b9aae;
+    --border: #e2e8f0;
+    --border-light: #edf2f7;
+
+    --purple: #7c3aed;
+    --purple-bg: #f5f3ff;
+    --purple-border: #c4b5fd;
+    --teal: #0d9488;
+    --teal-bg: #f0fdfa;
+    --teal-border: #5eead4;
+    --orange: #ea580c;
+    --orange-bg: #fff7ed;
+    --orange-border: #fdba74;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #93c5fd;
+    --emerald: #059669;
+    --emerald-bg: #ecfdf5;
+    --emerald-border: #6ee7b7;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fcd34d;
+    --rose: #e11d48;
+    --rose-bg: #fff1f2;
+    --rose-border: #fda4af;
+    --indigo: #4f46e5;
+    --indigo-bg: #eef2ff;
+    --indigo-border: #a5b4fc;
+    --cyan: #0891b2;
+    --cyan-bg: #ecfeff;
+    --cyan-border: #67e8f9;
+    --slate: #475569;
+    --slate-bg: #f8fafc;
+    --slate-border: #cbd5e1;
+
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 24px 60px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #eff6ff, #eef2ff);
+    border: 1px solid var(--blue-border);
+    color: var(--blue);
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -.5px;
+    background: linear-gradient(135deg, #1e293b, #475569);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ─── Main Grid Layout ─── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 1200px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── Left Sidebar: Input ─── */
+  .sidebar-left {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 20px;
+  }
+
+  .input-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    transition: box-shadow .2s;
+  }
+
+  .input-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+
+  .input-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .input-card .card-icon {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .input-card .card-title {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .input-card .card-subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .source-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--slate-bg);
+    margin-bottom: 8px;
+    border: 1px solid transparent;
+    transition: all .15s;
+  }
+
+  .source-item:hover { border-color: var(--border); background: #fff; }
+
+  .source-item .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .source-item strong { color: var(--text); font-size: 13px; }
+
+  /* ─── Center: Core Engine ─── */
+  .center-area {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Processing pipeline */
+  .pipeline {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+
+  .pipeline h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pipeline h3::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-light);
+  }
+
+  .pipeline-flow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 4px 0 8px;
+  }
+
+  .pipeline-flow::-webkit-scrollbar { height: 4px; }
+  .pipeline-flow::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+
+  .pipe-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 150px;
+    text-align: center;
+  }
+
+  .pipe-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 12px 14px;
+    width: 100%;
+    transition: all .2s;
+    position: relative;
+  }
+
+  .pipe-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+  }
+
+  .pipe-card .p-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .pipe-card .p-name {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  .pipe-card .p-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .pipe-arrow {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 2px;
+    margin-top: 32px;
+  }
+
+  .pipe-arrow .a-line {
+    width: 28px;
+    height: 1.5px;
+    background: var(--border);
+    position: relative;
+  }
+
+  .pipe-arrow .a-head {
+    width: 0; height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 7px solid var(--border);
+  }
+
+  /* Color-coded pipe nodes */
+  .pipe-parse { border-top: 3px solid var(--purple); }
+  .pipe-parse .p-name { color: var(--purple); }
+
+  .pipe-knowledge { border-top: 3px solid var(--teal); }
+  .pipe-knowledge .p-name { color: var(--teal); }
+
+  .pipe-analyze { border-top: 3px solid var(--blue); }
+  .pipe-analyze .p-name { color: var(--blue); }
+
+  .pipe-extract { border-top: 3px solid var(--orange); }
+  .pipe-extract .p-name { color: var(--orange); }
+
+  .pipe-fill { border-top: 3px solid var(--emerald); }
+  .pipe-fill .p-name { color: var(--emerald); }
+
+  .pipe-validate { border-top: 3px solid var(--amber); }
+  .pipe-validate .p-name { color: var(--amber); }
+
+  .pipe-output { border-top: 3px solid var(--rose); }
+  .pipe-output .p-name { color: var(--rose); }
+
+  /* ─── Detailed service blocks ─── */
+  .service-detail {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+
+  .service-detail h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .service-detail h3::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-light);
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+
+  .svc-block {
+    background: var(--slate-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    transition: all .15s;
+  }
+
+  .svc-block:hover { border-color: #cbd5e1; background: #fff; }
+
+  .svc-block .svc-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .svc-block .svc-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .svc-block .svc-name {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .svc-block .svc-calls {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+
+  .svc-block .svc-calls span {
+    display: inline-block;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin: 2px 2px 2px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+  }
+
+  /* ─── Right Sidebar: Call Graph ─── */
+  .sidebar-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 20px;
+  }
+
+  .call-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+
+  .call-card h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .call-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .call-node {
+    position: relative;
+    padding: 8px 10px 8px 20px;
+    font-size: 12px;
+    border-left: 2px solid var(--border-light);
+    margin-left: 8px;
+    transition: all .15s;
+  }
+
+  .call-node:hover {
+    border-left-color: var(--blue-border);
+    background: var(--blue-bg);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .call-node.root {
+    margin-left: 0;
+    border-left: 3px solid var(--blue);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 12px;
+    background: var(--blue-bg);
+    border-radius: 0 8px 8px 0;
+    color: var(--blue);
+  }
+
+  .call-node .fn-name {
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--text);
+  }
+
+  .call-node .fn-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* ─── Data flow between layers ─── */
+  .data-bridge {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 1000px) {
+    .data-bridge { grid-template-columns: 1fr; }
+  }
+
+  .bridge-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+
+  .bridge-card h4 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bridge-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bridge-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--slate-bg);
+    border: 1px solid transparent;
+  }
+
+  .bridge-item .arrow-sym {
+    color: var(--text-dim);
+    font-weight: 700;
+  }
+
+  .bridge-item strong {
+    color: var(--text);
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 24px;
+    padding: 12px 18px;
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">📐 年度检查报告自动填充 · 业务功能架构</div>
+    <h1>系统业务功能架构图</h1>
+    <p class="subtitle">各功能模块及其逻辑调用关系一览</p>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+
+    <!-- ═══ LEFT SIDEBAR: Input Sources ═══ -->
+    <div class="sidebar-left">
+      <div class="input-card">
+        <div class="card-header">
+          <div class="card-icon" style="background: var(--purple-bg);">📥</div>
+          <div>
+            <div class="card-title" style="color: var(--purple);">数据输入源</div>
+            <div class="card-subtitle">Input Sources</div>
+          </div>
+        </div>
+        <div class="source-item">
+          <span class="dot" style="background: var(--purple);"></span>
+          <div><strong>分子公司报告</strong><br><span style="font-size:10px;color:var(--text-dim)">PDF / Word 年度检查文档</span></div>
+        </div>
+        <div class="source-item">
+          <span class="dot" style="background: var(--teal);"></span>
+          <div><strong>领域本体 .ttl</strong><br><span style="font-size:10px;color:var(--text-dim)">OWL 本体定义文件</span></div>
+        </div>
+        <div class="source-item">
+          <span class="dot" style="background: var(--blue);"></span>
+          <div><strong>知识图谱 .rj</strong><br><span style="font-size:10px;color:var(--text-dim)">JSON-LD 结构化数据</span></div>
+        </div>
+        <div class="source-item">
+          <span class="dot" style="background: var(--emerald);"></span>
+          <div><strong>原始MD.docx</strong><br><span style="font-size:10px;color:var(--text-dim)">键值对与签名补充源</span></div>
+        </div>
+        <div class="source-item">
+          <span class="dot" style="background: var(--slate);"></span>
+          <div><strong>报告模板 .docx</strong><br><span style="font-size:10px;color:var(--text-dim)">年度检查报告 Word 模板</span></div>
+        </div>
+      </div>
+
+      <div class="input-card">
+        <div class="card-header">
+          <div class="card-icon" style="background: var(--indigo-bg);">🔌</div>
+          <div>
+            <div class="card-title" style="color: var(--indigo);">外部触发</div>
+            <div class="card-subtitle">External Triggers</div>
+          </div>
+        </div>
+        <div class="source-item">
+          <span class="dot" style="background: var(--indigo);"></span>
+          <div><strong>Web 前端控制台</strong><br><span style="font-size:10px;color:var(--text-dim)">用户手动上传 → 同步填充</span></div>
+        </div>
+        <div class="source-item">
+          <span class="dot" style="background: var(--indigo);"></span>
+          <div><strong>数字员工管理系统</strong><br><span style="font-size:10px;color:var(--text-dim)">API 调用 → 异步任务 → Webhook 回调</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CENTER: Core Pipeline ═══ -->
+    <div class="center-area">
+
+      <!-- Processing Pipeline -->
+      <div class="pipeline">
+        <h3>⚡ 核心处理链路</h3>
+        <div class="pipeline-flow">
+          <div class="pipe-node">
+            <div class="pipe-card pipe-parse">
+              <div class="p-icon">📄</div>
+              <div class="p-name">文档解析</div>
+              <div class="p-desc">PDF/Word 解包<br>XML 结构提取</div>
+            </div>
+          </div>
+          <div class="pipe-arrow"><div class="a-line"></div><div class="a-head"></div></div>
+          <div class="pipe-node">
+            <div class="pipe-card pipe-knowledge">
+              <div class="p-icon">🧬</div>
+              <div class="p-name">知识构建</div>
+              <div class="p-desc">本体定义<br>实体抽取入图</div>
+            </div>
+          </div>
+          <div class="pipe-arrow"><div class="a-line"></div><div class="a-head"></div></div>
+          <div class="pipe-node">
+            <div class="pipe-card pipe-analyze">
+              <div class="p-icon">🔍</div>
+              <div class="p-name">模板分析</div>
+              <div class="p-desc">识别占位符<br>表格结构分析</div>
+            </div>
+          </div>
+          <div class="pipe-arrow"><div class="a-line"></div><div class="a-head"></div></div>
+          <div class="pipe-node">
+            <div class="pipe-card pipe-extract">
+              <div class="p-icon">📤</div>
+              <div class="p-name">数据提取</div>
+              <div class="p-desc">图谱查询<br>双源数据合并</div>
+            </div>
+          </div>
+          <div class="pipe-arrow"><div class="a-line"></div><div class="a-head"></div></div>
+          <div class="pipe-node">
+            <div class="pipe-card pipe-fill">
+              <div class="p-icon">✍️</div>
+              <div class="p-name">报告填充</div>
+              <div class="p-desc">XML 直接写入<br>子树复制插入</div>
+            </div>
+          </div>
+          <div class="pipe-arrow"><div class="a-line"></div><div class="a-head"></div></div>
+          <div class="pipe-node">
+            <div class="pipe-card pipe-validate">
+              <div class="p-icon">✅</div>
+              <div class="p-name">数据校验</div>
+              <div class="p-desc">完整性检查<br>异常数据标注</div>
+            </div>
+          </div>
+          <div class="pipe-arrow"><div class="a-line"></div><div class="a-head"></div></div>
+          <div class="pipe-node">
+            <div class="pipe-card pipe-output">
+              <div class="p-icon">👤</div>
+              <div class="p-name">人工复核</div>
+              <div class="p-desc">审查异常标注<br>确认报告输出</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Detail -->
+      <div class="service-detail">
+        <h3>🔧 核心服务模块 &amp; 调用关系</h3>
+        <div class="service-grid">
+          <div class="svc-block">
+            <div class="svc-header">
+              <span class="svc-dot" style="background: var(--purple);"></span>
+              <span class="svc-name" style="color: var(--purple);">docxService</span>
+            </div>
+            <div class="svc-calls">
+              → python-docx unpack<br>
+              → python-docx pack<br>
+              → PowerShell fallback<br>
+              ← 被调: fillerService
+            </div>
+          </div>
+          <div class="svc-block">
+            <div class="svc-header">
+              <span class="svc-dot" style="background: var(--teal);"></span>
+              <span class="svc-name" style="color: var(--teal);">statementsParser</span>
+            </div>
+            <div class="svc-calls">
+              → JSON-LD 解析<br>
+              → 实体识别<br>
+              → 属性映射 (rj-property-map)<br>
+              ← 被调: fillerService
+            </div>
+          </div>
+          <div class="svc-block">
+            <div class="svc-header">
+              <span class="svc-dot" style="background: var(--blue);"></span>
+              <span class="svc-name" style="color: var(--blue);">templateService</span>
+            </div>
+            <div class="svc-calls">
+              → 模板上传/缓存<br>
+              → 占位符分析<br>
+              → 表头提取<br>
+              ← 被调: fillerService, apiRoutes
+            </div>
+          </div>
+          <div class="svc-block">
+            <div class="svc-header">
+              <span class="svc-dot" style="background: var(--orange);"></span>
+              <span class="svc-name" style="color: var(--orange);">chapterExtractor</span>
+            </div>
+            <div class="svc-calls">
+              → MD.docx 解析<br>
+              → 章节分组<br>
+              → 键值对/签名提取<br>
+              ← 被调: fillerService
+            </div>
+          </div>
+          <div class="svc-block">
+            <div class="svc-header">
+              <span class="svc-dot" style="background: var(--emerald);"></span>
+              <span class="svc-name" style="color: var(--emerald);">fillerService</span>
+            </div>
+            <div class="svc-calls">
+              → fillBySubtreeCopy<br>
+              → replacePlaceholders<br>
+              → fillTableFromSource<br>
+              ← 调度所有填充子模块
+            </div>
+          </div>
+          <div class="svc-block">
+            <div class="svc-header">
+              <span class="svc-dot" style="background: var(--indigo);"></span>
+              <span class="svc-name" style="color: var(--indigo);">subtreeInserter</span>
+            </div>
+            <div class="svc-calls">
+              → 表头匹配<br>
+              → XML 子树复制<br>
+              → 行模板克隆<br>
+              ← 被调: fillerService
+            </div>
+          </div>
+          <div class="svc-block">
+            <div class="svc-header">
+              <span class="svc-dot" style="background: var(--amber);"></span>
+              <span class="svc-name" style="color: var(--amber);">dataService</span>
+            </div>
+            <div class="svc-calls">
+              → JSON/YAML 解析<br>
+              → 数据校验<br>
+              → 预览生成<br>
+              ← 被调: apiRoutes
+            </div>
+          </div>
+          <div class="svc-block">
+            <div class="svc-header">
+              <span class="svc-dot" style="background: var(--rose);"></span>
+              <span class="svc-name" style="color: var(--rose);">taskService</span>
+            </div>
+            <div class="svc-calls">
+              → 状态机调度<br>
+              → 异步执行<br>
+              → Webhook 回调<br>
+              ← 被调: employeeRoutes
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ RIGHT SIDEBAR: Call Graph ═══ -->
+    <div class="sidebar-right">
+      <div class="call-card">
+        <h3>📞 API 路由 → 服务调用链</h3>
+        <div class="call-tree">
+          <div class="call-node root">POST /fill-by-copy</div>
+          <div class="call-node">
+            <span class="fn-name">→ fillerService.fillBySubtreeCopy()</span>
+            <div class="fn-desc">核心入口：接收双 sessionId</div>
+          </div>
+          <div class="call-node" style="margin-left: 28px;">
+            <span class="fn-name">→ statementsParser.analyze()</span>
+            <div class="fn-desc">解析 .rj 知识图谱</div>
+          </div>
+          <div class="call-node" style="margin-left: 28px;">
+            <span class="fn-name">→ chapterExtractor.extract()</span>
+            <div class="fn-desc">解析原始MD.docx</div>
+          </div>
+          <div class="call-node" style="margin-left: 28px;">
+            <span class="fn-name">→ templateService.analyze()</span>
+            <div class="fn-desc">分析模板占位符/表格</div>
+          </div>
+          <div class="call-node" style="margin-left: 28px;">
+            <span class="fn-name">→ replacePlaceholders()</span>
+            <div class="fn-desc">占位符替换</div>
+          </div>
+          <div class="call-node" style="margin-left: 28px;">
+            <span class="fn-name">→ fillTableFromSource()</span>
+            <div class="fn-desc">表格逐行填充</div>
+          </div>
+          <div class="call-node" style="margin-left: 44px;">
+            <span class="fn-name">→ subtreeInserter.insert()</span>
+            <div class="fn-desc">XML 子树复制插入</div>
+          </div>
+          <div class="call-node" style="margin-left: 44px;">
+            <span class="fn-name">→ fillKeyValueTable()</span>
+            <div class="fn-desc">键值对表格填充</div>
+          </div>
+          <div class="call-node" style="margin-left: 44px;">
+            <span class="fn-name">→ fillSignatureRow()</span>
+            <div class="fn-desc">表格内签名行填充</div>
+          </div>
+          <div class="call-node" style="margin-left: 28px;">
+            <span class="fn-name">→ validateData()</span>
+            <div class="fn-desc">数据校验 + 异常标注</div>
+          </div>
+          <div class="call-node" style="margin-left: 28px;">
+            <span class="fn-name">→ docxService.pack()</span>
+            <div class="fn-desc">打包生成 .docx</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="call-card">
+        <h3>🔄 数据流转路径</h3>
+        <div class="call-tree">
+          <div class="call-node root">数据提取路径</div>
+          <div class="call-node">
+            <span class="fn-name">.rj → statementsParser</span>
+            <div class="fn-desc">实体识别 → 属性映射 → 表格XML</div>
+          </div>
+          <div class="call-node">
+            <span class="fn-name">原始MD.docx → chapterExtractor</span>
+            <div class="fn-desc">章节分组 → 键值对 → 签名行</div>
+          </div>
+          <div class="call-node">
+            <span class="fn-name">双源合并 → fillerService</span>
+            <div class="fn-desc">.rj列表数据 + MD键值对/签名</div>
+          </div>
+        </div>
+        <div class="call-tree" style="margin-top: 12px;">
+          <div class="call-node root">填充执行路径</div>
+          <div class="call-node">
+            <span class="fn-name">模板XML → 占位符替换</span>
+            <div class="fn-desc">正则匹配 → 文本替换</div>
+          </div>
+          <div class="call-node">
+            <span class="fn-name">模板XML → 表格填充</span>
+            <div class="fn-desc">表头匹配 → 行复制 → 单元格写入</div>
+          </div>
+          <div class="call-node">
+            <span class="fn-name">模板XML → 签名填充</span>
+            <div class="fn-desc">末行识别 → 人名/日期写入</div>
+          </div>
+          <div class="call-node">
+            <span class="fn-name">填充后XML → docxService.pack</span>
+            <div class="fn-desc">打包 → 生成 .docx</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Data Bridge -->
+  <div class="data-bridge">
+    <div class="bridge-card">
+      <h4>📥 输入 → 知识层</h4>
+      <div class="bridge-flow">
+        <div class="bridge-item">
+          <span>分子公司报告</span><span class="arrow-sym">→</span><strong>文档解析</strong><span class="arrow-sym">→</span><span>本体建模</span>
+        </div>
+        <div class="bridge-item">
+          <span>本体定义 .ttl</span><span class="arrow-sym">→</span><strong>大模型辅助</strong><span class="arrow-sym">→</span><span>实体抽取</span>
+        </div>
+        <div class="bridge-item">
+          <span>抽取结果</span><span class="arrow-sym">→</span><strong>图数据库</strong><span class="arrow-sym">→</span><span>知识图谱 .rj</span>
+        </div>
+      </div>
+    </div>
+    <div class="bridge-card">
+      <h4>🧠 知识层 → 填充层</h4>
+      <div class="bridge-flow">
+        <div class="bridge-item">
+          <span>报告模板</span><span class="arrow-sym">→</span><strong>大模型分析</strong><span class="arrow-sym">→</span><span>字段映射</span>
+        </div>
+        <div class="bridge-item">
+          <span>字段映射</span><span class="arrow-sym">→</span><strong>图谱查询</strong><span class="arrow-sym">→</span><span>数据提取</span>
+        </div>
+        <div class="bridge-item">
+          <span>.rj + MD.docx</span><span class="arrow-sym">→</span><strong>双源合并</strong><span class="arrow-sym">→</span><span>统一数据模型</span>
+        </div>
+      </div>
+    </div>
+    <div class="bridge-card">
+      <h4>✍️ 填充层 → 输出层</h4>
+      <div class="bridge-flow">
+        <div class="bridge-item">
+          <span>统一数据</span><span class="arrow-sym">→</span><strong>XML填充引擎</strong><span class="arrow-sym">→</span><span>修改后XML</span>
+        </div>
+        <div class="bridge-item">
+          <span>修改后XML</span><span class="arrow-sym">→</span><strong>数据校验</strong><span class="arrow-sym">→</span><span>异常标注</span>
+        </div>
+        <div class="bridge-item">
+          <span>校验通过XML</span><span class="arrow-sym">→</span><strong>打包</strong><span class="arrow-sym">→</span><span>年度检查报告.docx</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background: var(--purple);"></span> 文档解析</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--teal);"></span> 知识构建</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--blue);"></span> 模板分析</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--orange);"></span> 数据提取</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--emerald);"></span> 报告填充</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--amber);"></span> 数据校验</div>
+    <div class="legend-item"><span class="legend-dot" style="background: var(--rose);"></span> 输出复核</div>
+  </div>
+
+  <div class="footer">
+    年度检查报告自动填充 · 业务功能架构图 v2.0 · 各模块逻辑调用关系
+  </div>
+
+</div>
+
+</body>
+</html>
