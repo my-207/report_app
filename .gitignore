@@ -4,9 +4,13 @@ server/uploads/
 server/output/
 server/sessions/
 server/*.log
-server/test-phase2*/
+# Test artifacts
+server/test-*.js
+server/test-phase2*
+server/dist/tests/
 _analysis/
 _check_output/
+*.rj
 output/
 *.docx
 .1
