@@ -14,3 +14,11 @@ output/
 console.error*
 0)*
 
+# Python
+__pycache__/
+
+# CodeBuddy internals
+.codebuddy/memory/
+.codebuddy/plans/
+
+

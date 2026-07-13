@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://report-filler.internal/schema/report-data.json",
+  "title": "UnifiedReportData",
+  "description": "年度检查报告统一数据结构 — 取数/填数/校验/预览共享的单源真相。TypeScript (server/src/types/index.ts) 和 Python (python_report_filler/src/report_filler/models.py) 均以此 Schema 为准。",
+  "type": "object",
+  "required": ["basicInfo", "sections"],
+  "additionalProperties": false,
+  "properties": {
+    "basicInfo": { "$ref": "#/$defs/BasicInfo" },
+    "sections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/SectionData" }
+    }
+  },
+
+  "$defs": {
+    "BasicInfo": {
+      "title": "BasicInfo",
+      "description": "报告基本信息 — 9 个必填字段",
+      "type": "object",
+      "required": [
+        "reportNumber",
+        "companyName",
+        "deviceName",
+        "reportTypePrefix",
+        "inspectionStartDate",
+        "inspectionEndDate",
+        "inspectorDate",
+        "checkerDate",
+        "reviewerDate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "reportNumber": {
+          "type": "string",
+          "description": "报告编号，格式: XXXXX-XXXX-XXXX-202X",
+          "examples": ["BJFGS-GQFX-NDJC-2025"]
+        },
+        "companyName": {
+          "type": "string",
+          "description": "单位名称",
+          "examples": ["国家管网集团北方管道有限责任公司北京输油气分公司"]
+        },
+        "deviceName": {
+          "type": "string",
+          "description": "设备名称",
+          "examples": ["港清复线"]
+        },
+        "reportTypePrefix": {
+          "type": "string",
+          "description": "报告类型前缀，如 GGW"
+        },
+        "inspectionStartDate": {
+          "type": "string",
+          "description": "检验起始日期，格式: YYYY年M月",
+          "examples": ["2025年6月"]
+        },
+        "inspectionEndDate": {
+          "type": "string",
+          "description": "检验结束日期，格式: YYYY年M月",
+          "examples": ["2025年7月"]
+        },
+        "inspectorDate": {
+          "type": "string",
+          "description": "检测人签名日期，格式: YYYY年M月DD日",
+          "examples": ["2025年6月17日"]
+        },
+        "checkerDate": {
+          "type": "string",
+          "description": "校对人签名日期，格式: YYYY年M月DD日",
+          "examples": ["2025年6月20日"]
+        },
+        "reviewerDate": {
+          "type": "string",
+          "description": "审核人签名日期，格式: YYYY年M月DD日",
+          "examples": ["2025年6月20日"]
+        }
+      }
+    },
+
+    "ValidationCell": {
+      "title": "ValidationCell",
+      "description": "带校验标记的单元格值。Union type: string | { value, valid, reason? }",
+      "type": "object",
+      "required": ["value", "valid"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "string", "description": "原始值文本" },
+        "valid": { "type": "boolean", "description": "是否通过质量校验" },
+        "reason": { "type": "string", "description": "校验不通过原因（可选）" }
+      }
+    },
+
+    "CellValue": {
+      "title": "CellValue",
+      "description": "单元格值 — 可以是纯字符串或带校验的 ValidationCell 对象",
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/$defs/ValidationCell" }
+      ]
+    },
+
+    "KeyValuePair": {
+      "title": "KeyValuePair",
+      "description": "键值对",
+      "type": "object",
+      "required": ["key", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string", "description": "键（字段标签）" },
+        "value": { "$ref": "#/$defs/CellValue", "description": "值（支持带校验标记）" }
+      }
+    },
+
+    "SignatureBlock": {
+      "title": "SignatureBlock",
+      "description": "签名数据。所有字段可选，空对象 {} 表示无签名数据。",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inspectorName": { "type": "string", "description": "检测人姓名" },
+        "inspectorDate": { "type": "string", "description": "检测人日期" },
+        "checkerName": { "type": "string", "description": "校核人姓名" },
+        "checkerDate": { "type": "string", "description": "校核人日期" },
+        "reviewerName": { "type": "string", "description": "审定人姓名" },
+        "reviewerDate": { "type": "string", "description": "审定人日期" }
+      }
+    },
+
+    "DataTableRow": {
+      "title": "DataTableRow",
+      "description": "列表型表格的一行数据，key 为列名，value 为字符串或 ValidationCell",
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/CellValue" }
+    },
+
+    "DataTable": {
+      "title": "DataTable",
+      "description": "列表型表格",
+      "type": "object",
+      "required": ["tableType", "headers", "rows"],
+      "additionalProperties": false,
+      "properties": {
+        "tableType": {
+          "type": "string",
+          "description": "实体类型标识，如 entity_0",
+          "examples": ["entity_0"]
+        },
+        "headers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "列名（中文表头）"
+        },
+        "rows": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/DataTableRow" },
+          "description": "数据行，每行是 header → value 映射"
+        }
+      }
+    },
+
+    "SectionData": {
+      "title": "SectionData",
+      "description": "章节数据 — 包含键值对、列表表格和签名信息",
+      "type": "object",
+      "required": ["id", "title", "kvPairs", "tables", "signature"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "章节编号，如 1-1、2-3",
+          "examples": ["sec_1"]
+        },
+        "title": {
+          "type": "string",
+          "description": "章节标题",
+          "examples": ["（1-1）原始资料审查报告"]
+        },
+        "kvPairs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/KeyValuePair" },
+          "description": "键值对列表"
+        },
+        "tables": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/DataTable" },
+          "description": "列表型表格"
+        },
+        "signature": {
+          "$ref": "#/$defs/SignatureBlock",
+          "description": "签名数据（空对象表示无签名）"
+        },
+        "tableIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "对应模板中的表格索引（由模板分析器提供，用于直接定位）"
+        },
+        "hasHybridTable": {
+          "type": "boolean",
+          "description": "混合表标记：kvPairs + tables 来自同一个混合 KV+List 表格"
+        },
+        "hasNestedKvTable": {
+          "type": "boolean",
+          "description": "嵌套KV表标记：kvPairs 来自嵌套KV表（含类别标题行）"
+        },
+        "hybridListHeaderRows": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "混合表中列表表头区所占行数"
+        }
+      }
+    }
+  }
+}

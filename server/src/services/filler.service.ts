@@ -1,9 +1,9 @@
-import { ReportData, FillResult, SourceAnalysis, SubtreeCopyStats, BasicInfo, Chapter, TablePreview, UnifiedReportData, DataTable, KeyValuePair } from "../types";
+import { ReportData, FillResult, BasicInfo, UnifiedReportData, DataTable, KeyValuePair, isCellValid, getValidationText } from "../types";
 import { logger } from "../utils/logger";
 import { templateService } from "./template.service";
 import { docxService } from "./docx.service";
 import { xmlSubtreeInserter } from "./xml-subtree-inserter.service";
-import { extractTagContent, isRowEmpty, isKeyValueTable, getCellMergedTexts } from "../utils/xml-utils";
+import { extractTagContent, isRowEmpty, getCellMergedTexts, findAllTags, analyzeRowCells } from "../utils/xml-utils";
 import { validateFilledDocument } from "../utils/xml-validator";
 
 /** 填充引擎：占位符替换 + 表格填充 + 子树复制 */
@@ -98,302 +98,7 @@ export class FillerService {
     return result;
   }
 
-  // ==================== 子树复制填充（新增） ====================
 
-  /**
-   * 合并 .rj 和 原始MD.docx 两份源分析
-   * 策略：.rj 负责列表型数据，MD 负责键值对表格和签名行
-   */
-  mergeSourceAnalysis(rjAnalysis: SourceAnalysis | null, mdAnalysis: SourceAnalysis | null): SourceAnalysis {
-    // 只有一种源时直接返回
-    if (!rjAnalysis && !mdAnalysis) {
-      return this.emptyAnalysis();
-    }
-    if (!rjAnalysis) return mdAnalysis!;
-    if (!mdAnalysis) return rjAnalysis;
-
-    // 合并 basicInfo：MD 优先（含签名日期等信息），.rj 补充缺失字段
-    const mergedBasicInfo: BasicInfo = {
-      reportNumber: mdAnalysis.basicInfo.reportNumber || rjAnalysis.basicInfo.reportNumber || "",
-      companyName: mdAnalysis.basicInfo.companyName || rjAnalysis.basicInfo.companyName || "",
-      deviceName: mdAnalysis.basicInfo.deviceName || rjAnalysis.basicInfo.deviceName || "",
-      reportTypePrefix: mdAnalysis.basicInfo.reportTypePrefix || rjAnalysis.basicInfo.reportTypePrefix || "",
-      inspectionStartDate: mdAnalysis.basicInfo.inspectionStartDate || rjAnalysis.basicInfo.inspectionStartDate || "",
-      inspectionEndDate: mdAnalysis.basicInfo.inspectionEndDate || rjAnalysis.basicInfo.inspectionEndDate || "",
-      inspectorDate: mdAnalysis.basicInfo.inspectorDate || rjAnalysis.basicInfo.inspectorDate || "",
-      checkerDate: mdAnalysis.basicInfo.checkerDate || rjAnalysis.basicInfo.checkerDate || "",
-      reviewerDate: mdAnalysis.basicInfo.reviewerDate || rjAnalysis.basicInfo.reviewerDate || "",
-    };
-
-    // 合并章节表格：.rj 的列表型 + MD 的键值对和签名行
-    const mergedChapters: Chapter[] = [];
-    const mergedPreviews: TablePreview[] = [];
-
-    // MD 的 chapters（含键值对表和签名行）
-    const mdChapterMap = new Map<string, Chapter>();
-    for (const ch of mdAnalysis.chapters) {
-      mdChapterMap.set(ch.id, ch);
-    }
-
-    // .rj 的 chapters（列表型数据）
-    for (const rjCh of rjAnalysis.chapters) {
-      const mdCh = mdChapterMap.get(rjCh.id);
-      const mergedTables: string[] = [];
-      const kvTables: string[] = [];
-      const listTables: string[] = [];
-
-      // 从 MD 章节取键值对表
-      if (mdCh) {
-        for (const t of mdCh.tables) {
-          if (isKeyValueTable(t)) {
-            kvTables.push(t);
-          }
-        }
-      }
-
-      // 从 .rj 取列表型表（非键值对）作为主要数据
-      for (const t of rjCh.tables) {
-        if (!isKeyValueTable(t)) {
-          listTables.push(t);
-        }
-      }
-
-      // 合并顺序：MD 键值对 → .rj 列表型
-      mergedTables.push(...kvTables, ...listTables);
-
-      mergedChapters.push({
-        id: rjCh.id,
-        title: rjCh.title,
-        startIndex: 0,
-        endIndex: 0,
-        xmlContent: "",
-        paragraphs: [],
-        tables: mergedTables,
-        // MD 的签名文本优先
-        signatureText: mdCh?.signatureText || rjCh.signatureText || "",
-      });
-
-      // 标记该 MD 章节已处理
-      mdChapterMap.delete(rjCh.id);
-    }
-
-    // 追加 MD 独有的章节
-    for (const [, mdCh] of mdChapterMap) {
-      mergedChapters.push(mdCh);
-    }
-
-    // 合并预览
-    const mdPreviewMap = new Map<string, TablePreview>();
-    for (const p of mdAnalysis.tablePreviews) {
-      mdPreviewMap.set(`${p.sectionId}_${p.entityType || p.headers.join(",")}`, p);
-    }
-    for (const p of rjAnalysis.tablePreviews) {
-      const key = `${p.sectionId}_${p.entityType || p.headers.join(",")}`;
-      if (!mdPreviewMap.has(key)) {
-        mdPreviewMap.set(key, p);
-      }
-    }
-    mergedPreviews.push(...mdPreviewMap.values());
-
-    logger.info(
-      `双源合并: .rj ${rjAnalysis.totalChapters}章 + MD ${mdAnalysis.totalChapters}章 → ${mergedChapters.length}章`
-    );
-
-    return {
-      totalChapters: mergedChapters.length,
-      totalTables: mergedChapters.reduce((s, c) => s + c.tables.length, 0),
-      keyValueTableCount: 0,
-      keyValuePairCount: 0,
-      basicInfo: mergedBasicInfo,
-      chapters: mergedChapters,
-      tablePreviews: mergedPreviews,
-    };
-  }
-
-  private emptyAnalysis(): SourceAnalysis {
-    return {
-      totalChapters: 0, totalTables: 0, keyValueTableCount: 0, keyValuePairCount: 0,
-      basicInfo: { reportNumber: "", companyName: "", deviceName: "", reportTypePrefix: "",
-        inspectionStartDate: "", inspectionEndDate: "", inspectorDate: "", checkerDate: "", reviewerDate: "" },
-      chapters: [], tablePreviews: [],
-    };
-  }
-
-  /**
-   * 从源文档 XML 子树复制数据到模板
-   * 核心原则：只复制 <w:t> 文本，模板格式完全不变
-   */
-  async fillBySubtreeCopy(
-    templateSessionId: string,
-    sourceUnpackDir: string,
-    sourceAnalysis: SourceAnalysis
-  ): Promise<{ fillResult: FillResult; subtreeStats: SubtreeCopyStats }> {
-    const stats: SubtreeCopyStats = {
-      chaptersCopied: 0,
-      paragraphsInserted: 0,
-      tablesFilled: 0,
-      placeholdersReplaced: 0,
-      rowsInserted: 0,
-      keyValueCellsFilled: 0,
-      validationPassed: true,
-    };
-    const warnings: string[] = [];
-
-    // 1. 获取模板 XML
-    let xml = await templateService.getDocumentXml(templateSessionId);
-
-    // 2. 分析模板结构
-    const templateAnalysis = await templateService.analyzeTemplate(templateSessionId);
-    logger.info(
-      `模板分析: ${templateAnalysis.tables.length} 个表格, ${templateAnalysis.placeholders.length} 个占位符`
-    );
-
-    // 3. 阶段1: 占位符替换（从 sourceAnalysis.basicInfo）
-    logger.info("阶段1: 占位符替换");
-    const placeholderData: ReportData = {
-      basicInfo: sourceAnalysis.basicInfo,
-      tables: [],
-    };
-    const phase1Result = this.replacePlaceholders(xml, placeholderData);
-    xml = phase1Result.xml;
-    stats.placeholdersReplaced = phase1Result.count;
-    warnings.push(...phase1Result.warnings);
-
-    // 4. 阶段2: 遍历源章节，匹配模板表格并填入数据
-    logger.info("阶段2: 子树复制 — 表格数据填充");
-    for (const chapter of sourceAnalysis.chapters) {
-      if (chapter.tables.length === 0) continue;
-
-      for (const sourceTable of chapter.tables) {
-        // 判断表格类型
-        const isKv = isKeyValueTable(sourceTable);
-        const matchResult = this.findMatchingTemplateTable(xml, sourceTable, isKv);
-
-        if (matchResult !== null) {
-          const { tableIndex } = matchResult;
-
-          if (isKv) {
-            // 键值对表格：按标签Key匹配填充
-            const kvResult = xmlSubtreeInserter.fillKeyValueTable(
-              xml, tableIndex, sourceTable
-            );
-            if (kvResult.cellsFilled > 0) {
-              xml = kvResult.xml;
-              stats.tablesFilled++;
-              stats.keyValueCellsFilled += kvResult.cellsFilled;
-            }
-          } else {
-            // 列表型表格：按表头+列顺序填充
-            // 传入章节签名文本用于表格内签名行填充
-            const fillResult = xmlSubtreeInserter.fillTableFromSource(
-              xml, tableIndex, sourceTable, chapter.signatureText
-            );
-            if (fillResult.rowsFilled > 0) {
-              xml = fillResult.xml;
-              stats.tablesFilled++;
-              stats.rowsInserted += fillResult.rowsFilled;
-            }
-          }
-        } else {
-          if (isKv) {
-            warnings.push(`未找到匹配键值对模板表格: 章节${chapter.id}`);
-          } else {
-            // 列表型表格未匹配：尝试宽松匹配（忽略 sourceReport 等噪声列名）
-            const looseResult = this.findMatchingTemplateTableLoose(xml, sourceTable);
-            if (looseResult !== null) {
-              const { tableIndex } = looseResult;
-              const fillResult = xmlSubtreeInserter.fillTableFromSource(
-                xml, tableIndex, sourceTable, chapter.signatureText
-              );
-              if (fillResult.rowsFilled > 0) {
-                xml = fillResult.xml;
-                stats.tablesFilled++;
-                stats.rowsInserted += fillResult.rowsFilled;
-                logger.info(`宽松匹配成功: 章节${chapter.id} → 模板表格[${tableIndex}]`);
-              }
-            } else {
-              warnings.push(`未找到匹配模板表格: 章节${chapter.id}`);
-            }
-          }
-        }
-      }
-
-      stats.chaptersCopied++;
-    }
-
-    // 5. 保存修改后的 XML
-    await templateService.saveDocumentXml(templateSessionId, xml);
-
-    // 5.5 格式校验：对比填充前后文档结构一致性
-    const templateEntry = templateService.getSession(templateSessionId);
-    let validationPassed = true;
-    let validationErrors: string[] = [];
-
-    if (templateEntry?.originalXml) {
-      const validation = validateFilledDocument(
-        templateEntry.originalXml,
-        xml,
-        templateEntry.unpackDir
-      );
-      validationPassed = validation.valid;
-      validationErrors = validation.errors;
-
-      if (!validationPassed) {
-        logger.error(`格式校验失败: ${validationErrors.join("; ")}`);
-        stats.validationPassed = false;
-
-        const fillResult: FillResult = {
-          success: false,
-          outputFileName: "",
-          downloadUrl: "",
-          stats: {
-            placeholdersReplaced: stats.placeholdersReplaced,
-            tablesFilled: stats.tablesFilled,
-            rowsInserted: stats.rowsInserted,
-          },
-          warnings: [...warnings, ...validationErrors],
-          error: `格式校验失败: ${validationErrors[0]}`,
-          validation: {
-            passed: false,
-            errors: validationErrors,
-            warnings: validation.warnings,
-          },
-        };
-
-        return { fillResult, subtreeStats: stats };
-      }
-
-      // 校验通过
-      stats.validationPassed = true;
-      logger.info("格式校验通过");
-    } else {
-      logger.warn("无原始 XML 快照，跳过格式校验");
-      stats.validationPassed = true; // 无快照时不阻塞流程
-    }
-
-    const fillResult: FillResult = {
-      success: true,
-      outputFileName: "",
-      downloadUrl: "",
-      stats: {
-        placeholdersReplaced: stats.placeholdersReplaced,
-        tablesFilled: stats.tablesFilled,
-        rowsInserted: stats.rowsInserted,
-      },
-      warnings,
-      validation: {
-        passed: true,
-        errors: [],
-        warnings: [],
-      },
-    };
-
-    logger.info(
-      `子树复制完成: ${stats.chaptersCopied} 章节, ${stats.tablesFilled} 表, ${stats.rowsInserted} 行`
-    );
-
-    return { fillResult, subtreeStats: stats };
-  }
 
   /** 在模板 XML 中查找与源表格表头匹配的表格索引 */
   private findMatchingTemplateTable(
@@ -830,6 +535,33 @@ export class FillerService {
     for (const section of sortedSections) {
       const tableIndex = section.tableIndex;
 
+      // 混合表：在 KV 填充前扫描模板，计算连续 KV 行数
+      let kvRowCount = 0;
+      if (tableIndex !== undefined && section.hasHybridTable) {
+        const tblRegex = /<w:tbl[ >]/g;
+        let tblMatch: RegExpExecArray | null;
+        let ti = 0;
+        while ((tblMatch = tblRegex.exec(xml)) !== null) {
+          if (ti === tableIndex) {
+            const tblContent = extractTagContent(xml, tblMatch.index, "w:tbl");
+            if (tblContent) {
+              const rows = findAllTags(tblContent, "w:tr");
+              let skipLeadingMergeTitle = true;
+              for (const row of rows) {
+                const analysis = analyzeRowCells(row.content);
+                // 跳过表头的合并标题行（如"(3-1)埋地管道..."），直到找到第一个数据行
+                if (skipLeadingMergeTitle && analysis.isMergeTitleRow) continue;
+                skipLeadingMergeTitle = false;
+                if (analysis.isKvRow) kvRowCount++;
+                else break;
+              }
+            }
+            break;
+          }
+          ti++;
+        }
+      }
+
       try {
 
       // 2a. 键值对表填充（kvPairs 有数据 或 混合表标记为真）
@@ -837,7 +569,7 @@ export class FillerService {
         if (tableIndex !== undefined) {
           // 直接索引定位（精确模式）
           const srcKvXml = this.kvToXml(section.kvPairs);
-          const kvResult = xmlSubtreeInserter.fillKeyValueTable(xml, tableIndex, srcKvXml);
+          const kvResult = xmlSubtreeInserter.fillKeyValueTable(xml, tableIndex, srcKvXml, section.kvPairs);
           if (kvResult.cellsFilled > 0) {
             xml = kvResult.xml;
             stats.tablesFilled++;
@@ -851,7 +583,7 @@ export class FillerService {
           const srcKvXml = this.kvToXml(section.kvPairs);
           const matchResult = this.findMatchingTemplateTable(xml, srcKvXml, true);
           if (matchResult !== null) {
-            const kvResult = xmlSubtreeInserter.fillKeyValueTable(xml, matchResult.tableIndex, srcKvXml);
+            const kvResult = xmlSubtreeInserter.fillKeyValueTable(xml, matchResult.tableIndex, srcKvXml, section.kvPairs);
             if (kvResult.cellsFilled > 0) {
               xml = kvResult.xml;
               stats.tablesFilled++;
@@ -882,13 +614,11 @@ export class FillerService {
 
       // 2b. 列表型表格填充（section.tables 有数据时）
       for (const dt of section.tables) {
-        const srcXml = this.dataTableToXml(dt);
+        const { xml: srcXml, validGrid } = this.dataTableToXml(dt);
         const sigText = section.signature?.inspectorName || "";
 
-        // 混合表：kvPairs 占据 Row 0，列表数据从 Row 0 + hybridListHeaderRows 开始
-        const kvRowCount = section.kvPairs.length > 0 ? 1 : 0;
         const listHeaderRows = section.hybridListHeaderRows ?? 1;
-        const dataStartRow = kvRowCount > 0 ? kvRowCount : 0;
+        const dataStartRow = kvRowCount;
 
         // 构建签名数据块（用于直接填充签名行姓名和日期）
         const sigBlock = section.signature || undefined;
@@ -896,7 +626,7 @@ export class FillerService {
         if (tableIndex !== undefined) {
           // 直接索引定位（精确模式）
           const fillResult = xmlSubtreeInserter.fillTableFromSource(
-            xml, tableIndex, srcXml, sigText, dataStartRow, sigBlock
+            xml, tableIndex, srcXml, sigText, dataStartRow, sigBlock, validGrid
           );
           if (!fillResult) {
             logger.warn(`fillTableFromSource 返回空值: tableIndex=${tableIndex}, section=${section.id}`);
@@ -913,7 +643,7 @@ export class FillerService {
           const matchResult = this.findMatchingTemplateTable(xml, srcXml, false);
           if (matchResult !== null) {
             const fillResult = xmlSubtreeInserter.fillTableFromSource(
-              xml, matchResult.tableIndex, srcXml, sigText, dataStartRow, sigBlock
+              xml, matchResult.tableIndex, srcXml, sigText, dataStartRow, sigBlock, validGrid
             );
             if (fillResult.rowsFilled > 0) {
               xml = fillResult.xml;
@@ -928,7 +658,7 @@ export class FillerService {
             const loose = this.findMatchingTemplateTableLoose(xml, srcXml);
             if (loose !== null) {
               const fillResult = xmlSubtreeInserter.fillTableFromSource(
-                xml, loose.tableIndex, srcXml, sigText, dataStartRow, sigBlock
+                xml, loose.tableIndex, srcXml, sigText, dataStartRow, sigBlock, validGrid
               );
               if (fillResult.rowsFilled > 0) {
                 xml = fillResult.xml;
@@ -1002,18 +732,24 @@ export class FillerService {
   }
 
   /** 将 DataTable 转为简化 XML（用于表头匹配） */
-  private dataTableToXml(dt: DataTable): string {
+  private dataTableToXml(dt: DataTable): { xml: string; validGrid?: boolean[][] } {
     const toTc = (text: string) => `<w:tc><w:p><w:r><w:t>${this.escapeXml(text)}</w:t></w:r></w:p></w:tc>`;
     const headerRow = `<w:tr>${dt.headers.map(toTc).join("")}</w:tr>`;
-    // DataTable.rows 类型为 Record<string, string>[]（对象，用列名作键）
-    // 同时兼容 string[]（数组，用数字索引），避免不同调用方数据格式差异导致数据丢失
+    const validGrid = dt.rows.map(r =>
+      dt.headers.map(h => {
+        const raw = (r as any)[h] || "";
+        return typeof raw === 'string' ? true : (typeof raw === 'object' && 'valid' in raw ? (raw as any).valid : true);
+      })
+    );
+    const hasInvalid = validGrid.some(row => row.some(v => !v));
     const dataRows = dt.rows.map(r =>
-      `<w:tr>${dt.headers.map((h, idx) => {
-        const val = Array.isArray(r) ? (r[idx] || "") : (r[h] || "");
+      `<w:tr>${dt.headers.map((h) => {
+        const raw = (r as any)[h] || "";
+        const val = getValidationText(raw as any);
         return toTc(val);
       }).join("")}</w:tr>`
     ).join("");
-    return `<w:tbl>${headerRow}${dataRows}</w:tbl>`;
+    return { xml: `<w:tbl>${headerRow}${dataRows}</w:tbl>`, validGrid: hasInvalid ? validGrid : undefined };
   }
 
   /** 将 KeyValuePair[] 转为简化 XML（用于键值对匹配） */
@@ -1021,7 +757,7 @@ export class FillerService {
     const toTc = (text: string) => `<w:tc><w:p><w:r><w:t>${this.escapeXml(text)}</w:t></w:r></w:p></w:tc>`;
     const cells: string[] = [];
     for (const kv of kvPairs) {
-      cells.push(toTc(kv.key), toTc(kv.value));
+      cells.push(toTc(kv.key), toTc(getValidationText(kv.value)));
     }
     // 每 4 个单元格一行
     const rows: string[] = [];

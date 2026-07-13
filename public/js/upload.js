@@ -1,26 +1,15 @@
 /**
- * 上传模块 — 三卡片双源模式
- * 卡片1: 模板 .docx | 卡片2: .rj 知识图谱 | 卡片3: 原始MD.docx
+ * 上传模块 — 模板 + 实采JSON
  */
 
 // 全局状态
 let templateFile = null;
 let templateSessionId = null;
-let rjFile = null;
-let rjSessionId = null;
-let rjAnalysis = null;
-let mdFile = null;
-let mdSessionId = null;
-let mdAnalysis = null;
 
 /** 初始化上传功能 */
 function initUpload() {
   const templateDropzone = document.getElementById('templateDropzone');
   const templateInput = document.getElementById('templateInput');
-  const rjDropzone = document.getElementById('rjDropzone');
-  const rjInput = document.getElementById('rjInput');
-  const mdDropzone = document.getElementById('mdDropzone');
-  const mdInput = document.getElementById('mdInput');
 
   // 模板上传
   templateDropzone.addEventListener('click', () => templateInput.click());
@@ -29,19 +18,13 @@ function initUpload() {
   });
   setupDragDrop(templateDropzone, handleTemplateFile, '.docx');
 
-  // .rj 知识图谱上传
-  rjDropzone.addEventListener('click', () => rjInput.click());
-  rjInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) handleRjUpload(e.target.files[0]);
-  });
-  setupDragDrop(rjDropzone, handleRjUpload, '.rj');
-
-  // 原始MD.docx上传
-  mdDropzone.addEventListener('click', () => mdInput.click());
-  mdInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) handleMdUpload(e.target.files[0]);
-  });
-  setupDragDrop(mdDropzone, handleMdUpload, '.docx');
+  // 实采JSON上传
+  const realDataInput = document.getElementById('realDataInput');
+  if (realDataInput) {
+    realDataInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) handleRealJsonUpload(e.target.files[0]);
+    });
+  }
 }
 
 /** 设置拖拽上传 */
@@ -95,136 +78,13 @@ async function handleTemplateFile(file) {
     showToast('模板上传成功', 'success');
     checkAllReady();
 
-    // 自动分析模板数据结构A
-    try {
-      const structResult = await getTemplateStructure(templateSessionId);
-      // 同时获取样例数据
-      let sampleData = null;
-      try {
-        const sampleResult = await getTemplateSampleData(templateSessionId);
-        sampleData = sampleResult.data;
-      } catch (e) {
-        console.warn('样例数据获取失败（非致命）:', e.message);
-      }
-      renderTemplateStructure(structResult.data, sampleData);
-    } catch (e) {
-      console.warn('模板结构分析失败（非致命）:', e.message);
-    }
+    // 显示实采数据操作区
+    document.getElementById('templateStructureSection').classList.remove('hidden');
+    const realUploadBtn = document.getElementById('tsRealDataUploadBtn');
+    if (realUploadBtn) { realUploadBtn.disabled = false; }
   } catch (err) {
     showToast('模板上传失败: ' + err.message, 'error');
   }
-}
-
-/** 处理 .rj 知识图谱文件上传 */
-async function handleRjUpload(file) {
-  if (!file.name.toLowerCase().endsWith('.rj')) {
-    showToast('请上传 .rj 格式的知识图谱文件', 'error');
-    return;
-  }
-
-  try {
-    showToast('正在解析知识图谱...', 'info');
-    const basicInfo = collectBasicInfo();
-    const result = await uploadRj(file, basicInfo);
-    rjFile = file;
-    rjSessionId = result.data.sessionId;
-    rjAnalysis = result.data.analysis;
-
-    document.getElementById('rjDropzone').classList.add('hidden');
-    document.getElementById('rjReady').classList.remove('hidden');
-    document.getElementById('rjFileName').textContent = file.name;
-    document.getElementById('rjFileSize').textContent = formatFileSize(file.size);
-
-    showToast('知识图谱解析成功', 'success');
-
-    // 渲染预览（优先 Unified）
-    if (result.data.analysis.unified || result.data.unified) {
-      renderUnifiedPreview(result.data.analysis.unified || result.data.unified);
-    } else {
-      renderPreview(rjAnalysis);
-    }
-    document.getElementById('rjBasicInfoSection').classList.remove('hidden');
-    if (rjAnalysis.basicInfo && rjAnalysis.basicInfo.deviceName) {
-      document.getElementById('rjDeviceName').value = rjAnalysis.basicInfo.deviceName;
-    }
-    checkAllReady();
-  } catch (err) {
-    showToast('知识图谱解析失败: ' + err.message, 'error');
-  }
-}
-
-/** 处理原始MD.docx上传 */
-async function handleMdUpload(file) {
-  if (!file.name.toLowerCase().endsWith('.docx')) {
-    showToast('请上传 .docx 格式的原始报告文件', 'error');
-    return;
-  }
-
-  try {
-    showToast('正在解析原始报告...', 'info');
-    const result = await uploadSource(file);
-    mdFile = file;
-    mdSessionId = result.data.sessionId;
-    mdAnalysis = result.data.analysis;
-
-    document.getElementById('mdDropzone').classList.add('hidden');
-    document.getElementById('mdReady').classList.remove('hidden');
-    document.getElementById('mdFileName').textContent = file.name;
-    document.getElementById('mdFileSize').textContent = formatFileSize(file.size);
-
-    showToast('原始报告解析成功', 'success');
-
-    // 如果还没有预览（没有 .rj），用 MD 渲染预览
-    if (!rjAnalysis) {
-      if (mdAnalysis.sections) {
-        renderUnifiedPreview(mdAnalysis);
-      } else {
-        renderPreview(mdAnalysis);
-      }
-      document.getElementById('rjBasicInfoSection').classList.add('hidden');
-    }
-    checkAllReady();
-  } catch (err) {
-    showToast('原始报告解析失败: ' + err.message, 'error');
-  }
-}
-
-/** 收集 BasicInfo 补充表单数据 */
-function collectBasicInfo() {
-  const fields = ['reportNumber', 'companyName', 'deviceName', 'reportTypePrefix',
-    'inspectionStartDate', 'inspectionEndDate', 'inspectorDate', 'checkerDate', 'reviewerDate'];
-  const basicInfo = {};
-  for (const f of fields) {
-    const el = document.getElementById('rj' + f.charAt(0).toUpperCase() + f.slice(1));
-    if (el && el.value.trim()) {
-      basicInfo[f] = el.value.trim();
-    }
-  }
-  return Object.keys(basicInfo).length > 0 ? basicInfo : undefined;
-}
-
-/** 应用补充信息（重新解析 .rj） */
-async function applyBasicInfo() {
-  if (!rjFile) return;
-  showToast('正在更新补充信息...', 'info');
-  try {
-    const basicInfo = collectBasicInfo();
-    const result = await uploadRj(rjFile, basicInfo);
-    rjSessionId = result.data.sessionId;
-    rjAnalysis = result.data.analysis;
-    renderPreview(rjAnalysis);
-    showToast('补充信息已更新', 'success');
-  } catch (err) {
-    showToast('更新失败: ' + err.message, 'error');
-  }
-}
-
-/** 折叠/展开 BasicInfo 表单 */
-function toggleRjForm() {
-  const body = document.getElementById('rjFormBody');
-  const toggle = document.getElementById('rjFormToggle');
-  body.classList.toggle('hidden');
-  toggle.classList.toggle('collapsed');
 }
 
 /** 移除模板 */
@@ -234,55 +94,19 @@ function removeTemplate() {
   document.getElementById('templateDropzone').classList.remove('hidden');
   document.getElementById('templateReady').classList.add('hidden');
   document.getElementById('templateInput').value = '';
+  document.getElementById('templateStructureSection').classList.add('hidden');
   checkAllReady();
 }
 
-/** 移除 .rj */
-function removeRj() {
-  rjFile = null;
-  rjSessionId = null;
-  rjAnalysis = null;
-  document.getElementById('rjDropzone').classList.remove('hidden');
-  document.getElementById('rjReady').classList.add('hidden');
-  document.getElementById('rjInput').value = '';
-  document.getElementById('rjBasicInfoSection').classList.add('hidden');
-  // 如果还有MD分析，用它渲染预览
-  if (mdAnalysis) {
-    if (mdAnalysis.sections) {
-      renderUnifiedPreview(mdAnalysis);
-    } else {
-      renderPreview(mdAnalysis);
-    }
-  } else {
-    document.getElementById('previewSection').classList.add('hidden');
-  }
-  checkAllReady();
-}
-
-/** 移除原始MD */
-function removeMd() {
-  mdFile = null;
-  mdSessionId = null;
-  mdAnalysis = null;
-  document.getElementById('mdDropzone').classList.remove('hidden');
-  document.getElementById('mdReady').classList.add('hidden');
-  document.getElementById('mdInput').value = '';
-  if (!rjAnalysis) {
-    document.getElementById('previewSection').classList.add('hidden');
-  }
-  checkAllReady();
-}
-
-/** 检查是否至少有一个源已就绪 */
+/** 检查模板是否已就绪 */
 function checkAllReady() {
   const actionSection = document.getElementById('actionSection');
-  const hasSource = rjFile || mdFile;
-  if (templateFile && hasSource) {
+  if (templateFile) {
     actionSection.classList.remove('hidden');
     updateStep(2);
   } else {
     actionSection.classList.add('hidden');
-    if (!templateFile && !hasSource) updateStep(1);
+    updateStep(1);
   }
 }
 
@@ -326,4 +150,53 @@ function showToast(message, type = 'info') {
     toast.style.transition = 'opacity 0.3s';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
+}
+
+/** 处理实采JSON文件上传 */
+function handleRealJsonUpload(file) {
+  if (!file.name.toLowerCase().endsWith('.json')) {
+    showToast('请上传 .json 格式的实采数据文件', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      // 校验 UnifiedReportData 格式
+      const err = validateUnifiedData(data);
+      if (err) {
+        showToast('数据格式错误: ' + err, 'error');
+        return;
+      }
+
+      // 缓存数据
+      cachedRealData = data;
+      cachedRealFileName = file.name;
+
+      // 渲染预览
+      renderUnifiedPreview(data);
+      document.getElementById('previewSection').classList.remove('hidden');
+
+      // 启用实采填充按钮
+      const realFillBtn = document.getElementById('tsRealFillBtn');
+      if (realFillBtn) { realFillBtn.disabled = false; realFillBtn.title = '将实际数据填入模板并生成报告'; }
+
+      // 更新上传按钮状态
+      const uploadBtn = document.getElementById('tsRealDataUploadBtn');
+      if (uploadBtn) {
+        uploadBtn.textContent = '\u2713 ' + file.name;
+        uploadBtn.classList.add('btn-uploaded');
+      }
+
+      showToast('实采数据加载成功: ' + (data.sections ? data.sections.length + ' 个章节' : ''), 'success');
+    } catch (err) {
+      showToast('JSON 解析失败: ' + err.message, 'error');
+    }
+  };
+  reader.onerror = function() {
+    showToast('文件读取失败', 'error');
+  };
+  reader.readAsText(file);
 }

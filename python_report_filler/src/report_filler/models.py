@@ -66,6 +66,7 @@ class SectionData:
     # 模板定位辅助字段
     table_index: Optional[int] = None         # 对应模板中的表格索引
     has_hybrid_table: bool = False            # 混合表标记
+    has_nested_kv_table: bool = False         # 嵌套KV表标记（含vMerge层级结构）
     hybrid_list_header_rows: int = 0          # 混合表列表表头占用行数
 
 

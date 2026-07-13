@@ -1,5 +1,5 @@
 import * as yaml from "js-yaml";
-import { ReportData, BasicInfo, TableData, DataPreview } from "../types";
+import { ReportData, BasicInfo, TableData } from "../types";
 
 /** 数据解析与校验服务 */
 export class DataService {
@@ -129,19 +129,6 @@ export class DataService {
     };
   }
 
-  /** 生成数据预览 */
-  generatePreview(data: ReportData): DataPreview {
-    return {
-      basicInfo: data.basicInfo,
-      tables: data.tables.map((t) => ({
-        tableName: t.tableName,
-        headerCount: t.headers.length,
-        rowCount: t.rows.length,
-        headers: t.headers,
-        sampleRows: t.rows.slice(0, 5), // 前5行预览
-      })),
-    };
-  }
 }
 
 export const dataService = new DataService();

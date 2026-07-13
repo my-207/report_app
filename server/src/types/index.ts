@@ -187,51 +187,9 @@ export interface UploadResponse {
   sessionId?: string;
 }
 
-/** 数据预览 */
-export interface DataPreview {
-  basicInfo: BasicInfo;
-  tables: {
-    tableName: string;
-    headerCount: number;
-    rowCount: number;
-    headers: string[];
-    sampleRows: string[][];
-  }[];
-}
+
 
 // ---------- 子树复制模型 ----------
-
-/** @deprecated 使用 UnifiedReportData + SectionData 替代 */
-export interface Chapter {
-  id: string;
-  title: string;
-  startIndex: number;
-  endIndex: number;
-  xmlContent: string;
-  paragraphs: string[];
-  tables: string[];
-  signatureText: string;
-}
-
-/** @deprecated 使用 DataTable + SectionData 替代 */
-export interface TablePreview {
-  sectionId: string;
-  entityType: string;
-  headers: string[];
-  rowCount: number;
-  sampleRows: string[][];
-}
-
-/** @deprecated 使用 UnifiedReportData 替代 */
-export interface SourceAnalysis {
-  chapters: Chapter[];
-  basicInfo: BasicInfo;
-  totalChapters: number;
-  totalTables: number;
-  keyValueTableCount: number;
-  keyValuePairCount: number;
-  tablePreviews: TablePreview[];
-}
 
 /** 子树复制统计 */
 export interface SubtreeCopyStats {
@@ -255,10 +213,30 @@ export interface SubtreeCopyStats {
 // 统一数据结构 A（UnifiedReportData）— 取数/填数/校验/预览共享
 // ============================================================
 
+/** 带校验标记的单元格值 */
+export interface ValidationCell {
+  /** 原始值文本 */
+  value: string;
+  /** 是否通过质量校验 */
+  valid: boolean;
+  /** 校验不通过原因（可选） */
+  reason?: string;
+}
+
+/** 辅助函数：提取纯文本，兼容 string | ValidationCell */
+export function getValidationText(val: string | ValidationCell): string {
+  return typeof val === 'string' ? val : val.value;
+}
+
+/** 辅助函数：判断是否通过校验（纯字符串视为通过） */
+export function isCellValid(val: string | ValidationCell): boolean {
+  return typeof val === 'string' ? true : val.valid;
+}
+
 /** 键值对 */
 export interface KeyValuePair {
   key: string;
-  value: string;
+  value: string | ValidationCell;
 }
 
 /** 签名数据 */
@@ -277,8 +255,8 @@ export interface DataTable {
   tableType: string;
   /** 列名（中文表头） */
   headers: string[];
-  /** 数据行，每行是 header → value 映射 */
-  rows: Record<string, string>[];
+  /** 数据行，每行是 header → value 映射（value 兼容 string | ValidationCell） */
+  rows: Record<string, string | ValidationCell>[];
 }
 
 /** 章节数据 */
@@ -303,7 +281,14 @@ export interface SectionData {
   hybridListHeaderRows?: number;
 }
 
-/** 统一报告数据（纯数据层，不含任何 Word XML） */
+/**
+ * 统一报告数据（纯数据层，不含任何 Word XML）
+ *
+ * **单源真相**: `shared/schema/report-data.json` (JSON Schema draft-07)
+ * 本接口定义必须与该 Schema 保持同步。修改数据模型时请先更新 Schema 文件。
+ *
+ * @see {@link ../../shared/schema/report-data.json}
+ */
 export interface UnifiedReportData {
   basicInfo: BasicInfo;
   sections: SectionData[];

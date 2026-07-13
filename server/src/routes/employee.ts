@@ -5,7 +5,6 @@ import fs from "fs";
 import { config } from "../config";
 import { templateService } from "../services/template.service";
 import { taskService } from "../services/task.service";
-import { dataService } from "../services/data.service";
 import {
   ApiResponse,
   HealthStatus,

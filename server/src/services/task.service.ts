@@ -158,34 +158,7 @@ export class TaskService {
     }
   }
 
-  /** 同步填充（业务 API 使用） */
-  async fillSync(
-    templateSessionId: string,
-    dataContent: string,
-    dataFormat: "json" | "yaml"
-  ): Promise<FillResult> {
-    // 解析数据
-    const reportData = dataService.parse(dataContent, dataFormat);
 
-    // 分析模板
-    await templateService.analyzeTemplate(templateSessionId);
-
-    // 执行填充
-    const fillResult = await fillerService.fill(templateSessionId, reportData);
-
-    // 打包生成 docx
-    const unpackDir = templateService.getUnpackDir(templateSessionId);
-    if (!unpackDir) throw new Error("模板会话已失效");
-
-    const outputFileName = `报告_${reportData.basicInfo.reportNumber}.docx`;
-    const outputPath = path.join(config.outputDir, outputFileName);
-    await docxService.pack(unpackDir, outputPath);
-
-    fillResult.outputFileName = outputFileName;
-    fillResult.downloadUrl = `/api/download/${outputFileName}`;
-
-    return fillResult;
-  }
 
   /** 获取活跃任务数 */
   getActiveCount(): number {

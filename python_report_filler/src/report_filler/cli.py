@@ -309,6 +309,7 @@ def _dict_to_unified_report(raw: dict) -> UnifiedReportData:
             signature=sig,
             table_index=s.get("tableIndex", s.get("table_index")),
             has_hybrid_table=s.get("hasHybridTable", s.get("has_hybrid_table", False)),
+            has_nested_kv_table=s.get("hasNestedKvTable", s.get("has_nested_kv_table", False)),
             hybrid_list_header_rows=s.get("hybridListHeaderRows", s.get("hybrid_list_header_rows", 0)),
         ))
 

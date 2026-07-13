@@ -28,7 +28,8 @@ export class XmlSubtreeInserter {
     sourceTableXml: string,
     signatureText: string = "",
     dataStartRow: number = 0,
-    signatureBlock?: { inspectorName?: string; inspectorDate?: string; checkerName?: string; checkerDate?: string; reviewerName?: string; reviewerDate?: string }
+    signatureBlock?: { inspectorName?: string; inspectorDate?: string; checkerName?: string; checkerDate?: string; reviewerName?: string; reviewerDate?: string },
+    validGrid?: boolean[][]
   ): { xml: string; rowsFilled: number } {
     // 1. 在 targetXml 中定位目标表格
     const tblRegex = /<w:tbl[ >]/g;
@@ -183,10 +184,11 @@ export class XmlSubtreeInserter {
       }
 
       for (let i = 0; i < Math.max(templateDataRows.length, dataRows.length); i++) {
+        const rowValidFlags = validGrid && i < validGrid.length ? validGrid[i] : undefined;
         if (i < dataRows.length && i < templateDataRows.length) {
           // 源有数据 + 模板有空行 → 填入
           filledDataRows.push(
-            this.fillRowWithData(templateDataRows[i].xml, dataRows[i])
+            this.fillRowWithData(templateDataRows[i].xml, dataRows[i], rowValidFlags)
           );
         } else if (i < templateDataRows.length) {
           // 源无更多数据但模板还有空行 → 保留模板空行原样
@@ -196,7 +198,7 @@ export class XmlSubtreeInserter {
           // 关键：移除 vMerge restart 属性，避免克隆行与原行发生垂直合并
           const clonedRow = this.cleanVMergeFromRow(templateDataRows[0].xml);
           filledDataRows.push(
-            this.fillRowWithData(clonedRow, dataRows[i])
+            this.fillRowWithData(clonedRow, dataRows[i], rowValidFlags)
           );
         }
       }
@@ -204,13 +206,17 @@ export class XmlSubtreeInserter {
       // 填充签名行：优先用 signatureBlock 直接填充，其次源表格签名行，最后章节级 signatureText
       // 无签名行时（hasSignatureRow=false）跳过签名填充
       let filledSignatureRow = "";
+      let hasDateToFill = false;
       if (hasSignatureRow) {
         if (signatureBlock && (signatureBlock.inspectorName || signatureBlock.checkerName || signatureBlock.reviewerName)) {
-          // 直接用 SignatureBlock 填充：在锚点文本（检测：/校对：/审核：）后插入姓名，替换日期占位符
+          // 直接用 SignatureBlock 填充：逐格插入姓名和替换日期占位符
+          // fillSignatureRowDirect 已逐格处理日期，无需后续全局清除
           filledSignatureRow = this.fillSignatureRowDirect(signatureTemplate, signatureBlock);
+          hasDateToFill = false; // 逐格已处理，不再全局清除
         } else if (signatureRow) {
           const expandedSigData = this.expandSignatureRow(signatureRow);
           filledSignatureRow = this.fillRowWithData(signatureTemplate, expandedSigData);
+          hasDateToFill = expandedSigData.some(v => /年月日/.test(v) && /\d{4}年/.test(v));
         } else if (signatureText && signatureText.trim()) {
           // 从章节级 signatureText 提取角色信息
           const chapterSigCells = this.expandSignatureRow([signatureText]);
@@ -218,10 +224,12 @@ export class XmlSubtreeInserter {
         } else {
           filledSignatureRow = signatureTemplate;
         }
-        // 清除签名行中未被替换的日期占位符
-        filledSignatureRow = this.replaceDatePlaceholders(filledSignatureRow);
-        // 清理签名行日期前多余空格（避免换行）
-        filledSignatureRow = this.trimSpacesBeforeDate(filledSignatureRow);
+        // 仅 signatureRow 回退路径需要全局清除残余占位符
+        // fillSignatureRowDirect 路径已逐格处理
+        if (hasDateToFill) {
+          filledSignatureRow = this.replaceDatePlaceholders(filledSignatureRow);
+          filledSignatureRow = this.trimSpacesBeforeDate(filledSignatureRow);
+        }
       }
 
       // 5. 组装完整表格 XML
@@ -373,7 +381,7 @@ export class XmlSubtreeInserter {
   }
 
   /** 用数据填充模板行（只替换 <w:t> 文本，保留格式） */
-  private fillRowWithData(templateRowXml: string, data: string[]): string {
+  private fillRowWithData(templateRowXml: string, data: string[], validFlags?: boolean[]): string {
     // 填充前诊断
     const preTcOpen = (templateRowXml.match(/<w:tc[ >]/g) || []).length;
     const preTcClose = (templateRowXml.match(/<\/w:tc>/g) || []).length;
@@ -414,29 +422,61 @@ export class XmlSubtreeInserter {
     }
 
     // 从后往前替换，避免索引偏移
-    // 关键：gridSpan > 1 时多个逻辑列映射到同一物理单元格，只处理一次（取第一个非空值）
-    // 否则第二次替换时用原始 tc.content.length 计算截取位置会错位，导致标签不配对
+    // 关键：gridSpan > 1 时多个逻辑列映射到同一物理单元格，只处理一次
     let filled = templateRowXml;
-    const processedPhysIdx = new Set<number>(); // 已处理的物理单元格索引
-    for (let li = logicalToPhysical.length - 1; li >= 0; li--) {
-      if (li >= data.length) continue;
-      const value = data[li];
-      if (!value) continue; // 空值跳过，保留模板原样
+    const processedPhysIdx = new Set<number>();
 
-      const physIdx = logicalToPhysical[li];
-      if (physIdx === undefined || physIdx >= tcMatches.length) continue; // 无映射或越界，跳过
-      if (processedPhysIdx.has(physIdx)) continue; // 同一物理单元格已处理过，跳过
+    // 检测数据格式：data.length < logicalCol → 紧凑格式（非展开，每物理格一个值）
+    //               data.length >= logicalCol → 展开格式（含gridSpan重复）
+    if (data.length > 0 && data.length < logicalCol) {
+      // 紧凑格式：从后往前填以避免XML索引偏移。若数据数小于物理格数，在尾部补空值使首格不被跳过
+      const fillableCount = tcMatches.filter((_, pi) => {
+        const tc = tcMatches[pi].content;
+        return !(/<w:vMerge\s*\/>/.test(tc) || /<w:vMerge\s+w:val="continue"/.test(tc));
+      }).length;
+      const paddedData: string[] = data.length < fillableCount
+        ? [...data, ...Array(fillableCount - data.length).fill("")]
+        : data;
+      const paddedFlags: boolean[] | undefined = validFlags && validFlags.length < fillableCount
+        ? [...validFlags, ...Array(fillableCount - validFlags.length).fill(true)]
+        : validFlags;
 
-      const tc = tcMatches[physIdx];
-      // 使用 injectTextIntoCell 处理有/无 <w:t> 两种情况
-      const newTc = this.injectTextIntoCell(tc.content, value);
-      processedPhysIdx.add(physIdx);
+      let dataIdx = paddedData.length - 1;
+      for (let physIdx = tcMatches.length - 1; physIdx >= 0; physIdx--) {
+        if (dataIdx < 0) break;
+        const tc = tcMatches[physIdx].content;
+        const isVMergeContinue = /<w:vMerge\s*\/>/.test(tc) || /<w:vMerge\s+w:val="continue"/.test(tc);
+        if (isVMergeContinue) continue;
+        const value = paddedData[dataIdx];
+        const isInvalid = paddedFlags && dataIdx < paddedFlags.length ? !paddedFlags[dataIdx] : false;
+        dataIdx--;
+        if (!value) continue;
+        if (processedPhysIdx.has(physIdx)) continue;
+        const newTc = this.injectTextIntoCell(tcMatches[physIdx].content, value, isInvalid);
+        processedPhysIdx.add(physIdx);
+        filled = filled.substring(0, tcMatches[physIdx].index) + newTc + filled.substring(tcMatches[physIdx].index + tcMatches[physIdx].content.length);
+      }
+    } else {
+      // 展开格式：data[li] 对应逻辑列 li，按gridSpan映射到物理单元格
+      for (let li = logicalToPhysical.length - 1; li >= 0; li--) {
+        if (li >= data.length) continue;
+        const value = data[li];
+        if (!value) continue; // 空值跳过，保留模板原样
 
-      // 精确索引替换（从后往前，索引不受前面替换影响）
-      filled =
-        filled.substring(0, tc.index) +
-        newTc +
-        filled.substring(tc.index + tc.content.length);
+        const physIdx = logicalToPhysical[li];
+        if (physIdx === undefined || physIdx >= tcMatches.length) continue;
+        if (processedPhysIdx.has(physIdx)) continue;
+
+        const isInvalid = validFlags && li < validFlags.length ? !validFlags[li] : false;
+        const tc = tcMatches[physIdx];
+        const newTc = this.injectTextIntoCell(tc.content, value, isInvalid);
+        processedPhysIdx.add(physIdx);
+
+        filled =
+          filled.substring(0, tc.index) +
+          newTc +
+          filled.substring(tc.index + tc.content.length);
+      }
     }
 
     // 填充后诊断
@@ -458,13 +498,34 @@ export class XmlSubtreeInserter {
    * 某些 WPS 制作的模板中，空单元格缺少完整的 <w:r><w:t/></w:r> 文本 run，
    * 导致原有正则无法匹配，数据无法写入。
    */
-  private injectTextIntoCell(cellXml: string, text: string): string {
-    const hasOpenTag = /<w:t\b/.test(cellXml);
-    const hasCloseTag = /<\/w:t>/.test(cellXml);
+  private injectTextIntoCell(cellXml: string, text: string, highlight = false): string {
+    // 黄色背景：在 <w:rPr> 中注入 <w:highlight w:val="yellow"/>
+    let xml = cellXml;
+    if (highlight) {
+      if (/<w:rPr\b/.test(xml)) {
+        // 已有 <w:rPr>，在其内部追加 w:highlight
+        xml = xml.replace(
+          /<w:rPr\b([^>]*)>/g,
+          (match) => {
+            if (match.includes('w:highlight')) return match;
+            return match.replace(/\/?>$/, '') + '><w:highlight w:val="yellow"/>';
+          }
+        );
+      } else {
+        // 无 <w:rPr>，在第一个 <w:r> 开始标签后补全
+        xml = xml.replace(
+          /(<w:r\b[^>]*>)/,
+          '$1<w:rPr><w:highlight w:val="yellow"/></w:rPr>'
+        );
+      }
+    }
+
+    const hasOpenTag = /<w:t\b/.test(xml);
+    const hasCloseTag = /<\/w:t>/.test(xml);
 
     // 情况1: 有完整的 <w:t>...</w:t> 标签 → 正则替换
     if (hasOpenTag && hasCloseTag) {
-      return cellXml.replace(
+      return xml.replace(
         /(<w:t\b[^>]*>)([\s\S]*?)(<\/w:t>)/,
         (_m, p1: string, _p2: string, p3: string) => p1 + this.escapeXml(text) + p3
       );
@@ -473,14 +534,14 @@ export class XmlSubtreeInserter {
     // 情况2: 有 <w:t 开头但无 </w:t> 闭合 → 需特殊处理防止吃掉 </w:r> 等结构标签
     if (hasOpenTag && !hasCloseTag) {
       // 2a) 自闭合 <w:t ... /> → 展开为 <w:t ...>text</w:t>，保持外围结构不变
-      if (/<w:t[^>]*\/>/.test(cellXml)) {
-        return cellXml.replace(
+      if (/<w:t[^>]*\/>/.test(xml)) {
+        return xml.replace(
           /(<w:t\b[^>]*)\/>/,
           (_m, p1: string) => p1 + ">" + this.escapeXml(text) + "</w:t>"
         );
       }
       // 2b) 非自闭合但缺 </w:t> → 用 </w:r> 或 </w:p> 作为闭合边界，避免 [^]* 吃掉结构标签
-      return cellXml.replace(
+      return xml.replace(
         /(<w:t\b[^>]*>)([^]*?)(<\/w:r>|<\/w:p>)/,
         (_m, p1: string, _p2: string, p3: string) => p1 + this.escapeXml(text) + "</w:t>" + p3
       );
@@ -488,7 +549,7 @@ export class XmlSubtreeInserter {
 
     // 情况3: 完全无 <w:t> 标签 → 注入完整 run 结构
     // 从 <w:pPr> 继承字体属性（保证格式一致性）
-    const rPrMatch = /<w:rPr(?:\s[^>]*)?>.*?<\/w:rPr>/s.exec(cellXml);
+    const rPrMatch = /<w:rPr(?:\s[^>]*)?>.*?<\/w:rPr>/s.exec(xml);
     let inheritedRPr = rPrMatch ? rPrMatch[0] : "<w:rPr/>";
     // 确保rPr包含rFonts字体属性（宋体），否则填充文字可能使用文档默认字体
     if (!/<w:rFonts\b/.test(inheritedRPr)) {
@@ -500,14 +561,14 @@ export class XmlSubtreeInserter {
     const runXml = `<w:r>${inheritedRPr}<w:t xml:space="preserve">${this.escapeXml(text)}</w:t></w:r>`;
 
     // 在 </w:pPr> 之后、</w:p> 之前插入 run
-    if (/<\/w:pPr>/.test(cellXml)) {
-      return cellXml.replace("</w:pPr>", `</w:pPr>${runXml}`);
-    } else if (/<(w:p)[ >]/.test(cellXml)) {
+    if (/<\/w:pPr>/.test(xml)) {
+      return xml.replace("</w:pPr>", `</w:pPr>${runXml}`);
+    } else if (/<(w:p)[ >]/.test(xml)) {
       // 没有 pPr 时，在第一个 <w:p> 开始标签后插入
-      return cellXml.replace(/(<w:p[ >][^>]*>)/, `$1${runXml}`);
+      return xml.replace(/(<w:p[ >][^>]*>)/, `$1${runXml}`);
     }
     // 兜底：直接追加到 cell 末尾前
-    return cellXml.replace(/(<\/w:tc>)$/, `${runXml}$1`);
+    return xml.replace(/(<\/w:tc>)$/, `${runXml}$1`);
   }
 
   /** 获取默认行模板（用于追加新行） */
@@ -529,7 +590,8 @@ export class XmlSubtreeInserter {
   fillKeyValueTable(
     targetXml: string,
     targetTableIndex: number,
-    sourceTableXml: string
+    sourceTableXml: string,
+    kvPairs?: { key: string; value: string | { value: string; valid: boolean; reason?: string } }[]
   ): { xml: string; cellsFilled: number } {
     // 1. 定位模板中的目标表格
     const tblRegex = /<w:tbl[ >]/g;
@@ -552,13 +614,22 @@ export class XmlSubtreeInserter {
         return { xml: targetXml, cellsFilled: 0 };
       }
 
+      // 2b. 构建校验未通过的key集合，用于填充时加黄色背景
+      const invalidKeys = new Set<string>();
+      if (kvPairs) {
+        for (const kv of kvPairs) {
+          const valid = typeof kv.value === 'string' ? true : kv.value.valid;
+          if (!valid) invalidKeys.add(kv.key);
+        }
+      }
+
       // 3. 遍历模板表格的每一行，查找标签Key并填充
       let cellsFilled = 0;
       let rebuiltTbl = targetTbl;
 
       const targetRows = this.extractAllRows(targetTbl);
       for (const row of targetRows) {
-        const filledRow = this.fillKeyValueRow(row.xml, sourceKvMap);
+        const filledRow = this.fillKeyValueRow(row.xml, sourceKvMap, invalidKeys);
         if (filledRow.xml !== row.xml) {
           rebuiltTbl = rebuiltTbl.replace(row.xml, filledRow.xml);
           cellsFilled += filledRow.cellsFilled;
@@ -612,7 +683,8 @@ export class XmlSubtreeInserter {
    */
   private fillKeyValueRow(
     rowXml: string,
-    sourceKvMap: Map<string, string>
+    sourceKvMap: Map<string, string>,
+    invalidKeys: Set<string> = new Set()
   ): { xml: string; cellsFilled: number } {
     let resultXml = rowXml;
     let cellsFilled = 0;
@@ -664,7 +736,9 @@ export class XmlSubtreeInserter {
       }
 
       // 填充：使用 injectTextIntoCell 处理有/无 <w:t> 两种情况
-      const newTc = this.injectTextIntoCell(valueTc.content, sourceValue);
+      // 若该 key 对应的值未通过校验，单元格加黄色背景
+      const needsHighlight = invalidKeys.has(labelText);
+      const newTc = this.injectTextIntoCell(valueTc.content, sourceValue, needsHighlight);
 
       // 精确索引替换（从后往前，不受前面替换影响）
       resultXml =
@@ -733,7 +807,7 @@ export class XmlSubtreeInserter {
     result = result.replace(allWtRegex, (fullMatch, text) => {
       const trimmed = text.trim();
       // 只清空纯日期片段（如 "202", "X", "年", "6", "月", "XX", "日"）
-      if (trimmed && /^[\dX年月日]+$/.test(trimmed) && /[\dX]/.test(trimmed)) {
+      if (trimmed && /^[\dX年月日]+$/.test(trimmed) && (/[\dX]/.test(trimmed) || /^[年月日]$/.test(trimmed))) {
         // 检查上下文：只在签名行中清空（避免误清正常日期）
         // 简单策略：如果片段含 X 占位符，或纯数字且长度<=4，视为日期占位符片段
         if (/X/.test(trimmed) || /^\d{1,4}$/.test(trimmed) || /^[年月日]$/.test(trimmed)) {
@@ -860,10 +934,13 @@ export class XmlSubtreeInserter {
         const beforeReplace = newTc;
         newTc = this.replaceMultiRunDate(newTc, role.date);
         if (newTc === beforeReplace) {
-          logger.warn(`replaceMultiRunDate 未替换: role=${role.anchors[0]}, date=${role.date}, cellXml长度=${beforeReplace.length}`);
+          logger.warn(`replaceMultiRunDate 未替换: role=${role.anchors[0]}, date=${role.date}, cellWtCount=${(beforeReplace.match(/<w:t\b/g)||[]).length}`);
         } else {
           logger.info(`replaceMultiRunDate 替换成功: role=${role.anchors[0]}, date=${role.date}`);
         }
+      } else if (role.name && role.name.trim()) {
+        // 姓名已填入但日期为空：保留模板占位符原样
+        logger.info(`签名日期跳过（未提供）: role=${role.anchors[0]}, hasName=true`);
       }
 
       // 替换回 result
@@ -888,7 +965,36 @@ export class XmlSubtreeInserter {
       wts.push({ full: m[0], text: m[1], index: m.index, end: m.index + m[0].length });
     }
 
-    // 找日期序列：从含"20"且含X占位符或纯日期数字的片段开始，到"日"结束
+    // 单run日期：锚点文本和日期占位符在同一<w:t>中
+    // 如 <w:t>检测：                            202X年X月XX日</w:t>
+    if (wts.length === 1) {
+      const text = wts[0].text;
+      // 直接替换文本中的日期占位符为实际日期
+      const patterns = [
+        /20\dX年\d{1,2}月\d{1,2}日/g,
+        /20\dX年X月XX日/g,
+        /20XX年XX月XX日/g,
+      ];
+      let newText = text;
+      let replaced = false;
+      for (const pat of patterns) {
+        if (pat.test(newText)) {
+          newText = newText.replace(pat, actualDate);
+          replaced = true;
+          break;
+        }
+      }
+      if (replaced) {
+        const newWt = wts[0].full.replace(
+          /(<w:t\b[^>]*>)([\s\S]*?)(<\/w:t>)/,
+          (_m2: string, p1: string, _p2: string, p3: string) => p1 + this.escapeXml(newText) + p3
+        );
+        return cellXml.substring(0, wts[0].index) + newWt + cellXml.substring(wts[0].end);
+      }
+      return cellXml;
+    }
+
+    // 多run日期：找日期序列从含"20"的片段开始到"日"结束
     // 更宽松的起始匹配：文本以 20 开头，且包含日期特征（X占位符或年月日或纯数字）
     for (let i = 0; i < wts.length; i++) {
       const startText = wts[i].text.trim();
@@ -906,8 +1012,8 @@ export class XmlSubtreeInserter {
         );
       if (!isDateStart) continue;
 
-      // 向后查找 "日"
-      for (let j = i + 1; j < wts.length; j++) {
+      // 向后查找 "日"（从 i 开始：单run日期"202X年X月XX日"的"日"在同一元素内）
+      for (let j = i; j < wts.length; j++) {
         // 找到含"日"的片段（可能合并如"17日"）
         if (wts[j].text.trim().endsWith("日") || wts[j].text.trim() === "日") {
           // 找到完整日期序列 [i..j]
