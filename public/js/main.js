@@ -78,7 +78,8 @@ function showResult(data) {
   const resultSection = document.getElementById('resultSection');
   const resultContent = document.getElementById('resultContent');
 
-  const fillResult = data.fillResult || {};
+  // data 就是 FillResult 对象（后端 api.ts 返回 { success: true, data: result }）
+  const fillResult = data || {};
   const stats = fillResult.stats || {};
   const subtreeStats = data.subtreeStats || {};
   const validation = fillResult.validation || {};

@@ -188,6 +188,38 @@ class PlaceholderRule:
     priority: int = 0                 # 优先级（数值越大越先匹配）
 
 
+# ============================================================
+# 校验辅助函数 — 对应 TS getValidationText / isCellValid
+# ============================================================
+
+
+def get_validation_text(val) -> str:
+    """提取纯文本值，兼容 str | dict — 对应 TS getValidationText
+
+    支持格式：
+      - "3.8" → "3.8"
+      - {"value": "3.8", "valid": false, "reason": "..."} → "3.8"
+    """
+    if isinstance(val, str):
+        return val
+    if isinstance(val, dict):
+        return str(val.get("value", ""))
+    return str(val) if val else ""
+
+
+def is_cell_valid(val) -> bool:
+    """判断单元格值是否通过校验 — 对应 TS isCellValid
+
+    返回 True 表示校验通过（正常），False 表示需要高亮黄色。
+    纯字符串格式始终返回 True。
+    """
+    if isinstance(val, str):
+        return True
+    if isinstance(val, dict):
+        return val.get("valid", True)
+    return True
+
+
 # 默认占位符映射表（与 TS filler.service.ts PLACEHOLDER_MAP 对齐）
 DEFAULT_PLACEHOLDER_MAP: list[PlaceholderRule] = [
     # 报告编号: XXXXX-XXXX-XXXX-202X

@@ -47,4 +47,7 @@ export const config = {
 
   /** Python 解释器路径（可选，默认 python3/python） */
   pythonPath: process.env.PYTHON_PATH || "python",
+
+  /** Python report_filler 包所在目录 */
+  pythonFillerDir: path.resolve(__dirname, "..", "..", "python_report_filler"),
 };

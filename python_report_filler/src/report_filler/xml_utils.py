@@ -554,7 +554,7 @@ def find_chapter_boundaries(tree: etree._Element) -> list[dict]:
 # ============================================================
 
 
-def inject_text_into_cell(cell: etree._Element, text: str) -> bool:
+def inject_text_into_cell(cell: etree._Element, text: str, highlight: bool = False) -> bool:
     """向单元格中注入文本 — 对应 TS injectTextIntoCell
 
     按优先级尝试：
@@ -562,13 +562,27 @@ def inject_text_into_cell(cell: etree._Element, text: str) -> bool:
     2. 向已有的 <w:r> 元素中添加 <w:t>
     3. 创建新的 <w:r> + <w:t> 子元素
 
+    当 highlight=True 时，在 <w:rPr> 中注入 <w:highlight w:val="yellow"/>（黄色高亮）。
+
     Args:
         cell: <w:tc> Element
         text: 要注入的文本
+        highlight: 是否高亮黄色（校验未通过的单元格）
 
     Returns:
         是否成功注入
     """
+    # 高亮处理辅助函数
+    def _apply_highlight(run: etree._Element) -> None:
+        """在 run 的 <w:rPr> 中注入黄色高亮 — 对应 TS injectTextIntoCell highlight"""
+        rpr = run.find(qn("w:rPr"))
+        if rpr is None:
+            rpr = etree.SubElement(run, qn("w:rPr"))
+        # 避免重复注入
+        if rpr.find(qn("w:highlight")) is None:
+            hl = etree.SubElement(rpr, qn("w:highlight"))
+            hl.set(qn("w:val"), "yellow")
+
     # Case 1: 已有 <w:t> 元素 → 替换文本
     wts = cell.findall(".//w:t", NSMAP)
     if wts:
@@ -576,11 +590,18 @@ def inject_text_into_cell(cell: etree._Element, text: str) -> bool:
         # 清空后续 <w:t>（保留元素但清空，保持 run 结构）
         for wt in wts[1:]:
             wt.text = ""
+        # 高亮：在第一个 <w:t> 所属的 <w:r> 中注入
+        if highlight:
+            parent = wts[0].getparent()
+            if parent is not None and parent.tag == qn("w:r"):
+                _apply_highlight(parent)
         return True
 
     # Case 2: 已有 <w:r> 元素，但没有 <w:t> → 添加 <w:t>
     runs = cell.findall(".//w:r", NSMAP)
     if runs:
+        if highlight:
+            _apply_highlight(runs[0])
         wt_el = etree.SubElement(runs[0], qn("w:t"))
         wt_el.text = text
         # 如果有 xml:space 属性，添加以保留空格
@@ -593,6 +614,8 @@ def inject_text_into_cell(cell: etree._Element, text: str) -> bool:
         para = etree.SubElement(cell, qn("w:p"))
 
     run = etree.SubElement(para, qn("w:r"))
+    if highlight:
+        _apply_highlight(run)
     wt_el = etree.SubElement(run, qn("w:t"))
     wt_el.text = text
     wt_el.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")

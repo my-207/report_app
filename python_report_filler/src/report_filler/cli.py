@@ -70,6 +70,10 @@ def main():
               help="输出 JSON 文件路径（默认输出到控制台）")
 def analyze(template: str, output: Optional[str]):
     """分析模板 .docx 的表格结构和占位符"""
+    # 确保 stdout 使用 UTF-8，避免 Windows GBK 编码下 Unicode 字符报错
+    import io
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     try:
         # 解包
         unpacked = DocxIO.copy_template(template, Path("_tmp_analyze"))
@@ -151,6 +155,11 @@ def analyze(template: str, output: Optional[str]):
 @click.option("--verbose", "-v", is_flag=True, help="显示详细日志")
 def fill(template: str, data: str, output: str, verbose: bool):
     """用数据填充报告模板并输出 .docx"""
+    # 确保 stdout 使用 UTF-8，避免 Windows GBK 编码下 Unicode 字符（如 ✓ ✗ ⚠）报错
+    import io
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     if verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
@@ -206,6 +215,10 @@ def fill(template: str, data: str, output: str, verbose: bool):
               help="数据文件路径 (.json / .yaml)")
 def validate(template: str, data: str):
     """比较模板和已填充文档的结构一致性"""
+    # 确保 stdout 使用 UTF-8，避免 Windows GBK 编码下 Unicode 字符报错
+    import io
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     try:
         report_data = _load_data(data)
 

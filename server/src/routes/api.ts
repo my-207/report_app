@@ -7,6 +7,7 @@ import { templateService } from "../services/template.service";
 import { taskService } from "../services/task.service";
 import { docxService } from "../services/docx.service";
 import { fillerService } from "../services/filler.service";
+import { pythonFillerService } from "../services/python-filler.service";
 import { ApiResponse, UploadResponse } from "../types";
 
 const router = Router();
@@ -83,20 +84,38 @@ router.post("/fill-with-data", async (req: Request, res: Response) => {
     if (!templateSessionId || !unifiedData) {
       return res.status(400).json({ success: false, error: "缺少 templateSessionId 或 unifiedData" } as ApiResponse);
     }
-    const result = await fillerService.fillBySubtreeCopyV2(templateSessionId, unifiedData);
 
-    // 打包生成 .docx 文件
-    const unpackDir = templateService.getUnpackDir(templateSessionId);
-    if (!unpackDir) {
-      throw new Error("模板会话已失效");
+    // 获取模板文件路径（通过 sessionId + fileName 拼接）
+    const session = templateService.getSession(templateSessionId);
+    if (!session) {
+      return res.status(400).json({ success: false, error: "模板会话已失效" } as ApiResponse);
     }
+
+    const templatePath = path.join(config.uploadDir, `${templateSessionId}_${session.fileName}`);
+
+    if (!fs.existsSync(templatePath)) {
+      return res.status(400).json({ success: false, error: "模板文件已过期，请重新上传" } as ApiResponse);
+    }
+
+    // 生成输出文件路径
     const reportNumber = unifiedData.basicInfo?.reportNumber || Date.now();
     const outputFileName = `报告_${reportNumber}.docx`;
     const outputPath = path.join(config.outputDir, outputFileName);
-    await docxService.pack(unpackDir, outputPath);
 
-    result.fillResult.outputFileName = outputFileName;
-    result.fillResult.downloadUrl = `/api/download/${outputFileName}`;
+    // 调用 Python 后端进行填充
+    const result = await pythonFillerService.fillWithPython({
+      templatePath,
+      data: unifiedData,
+      outputPath,
+    });
+
+    if (!result.success) {
+      return res.status(500).json({
+        success: false,
+        error: result.error || "填充失败",
+        data: result,
+      } as ApiResponse);
+    }
 
     res.json({ success: true, data: result } as ApiResponse);
   } catch (err: any) {
