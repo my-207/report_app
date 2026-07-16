@@ -153,12 +153,14 @@ export async function fillWithPython(options: PythonFillOptions): Promise<FillRe
 
     // 2. 确定 CLI 入口
     // 使用 `python -m report_filler.cli` 作为备选方案
+    // 添加 -v 启用 DEBUG 级别日志，便于排查高亮问题
     const cliArgs = [
       "-m", "report_filler.cli",
       "fill",
       "--template", templatePath,
       "--data", tmpDataPath,
       "--output", outputPath,
+      "--verbose",
     ];
 
     logger.info(`调用 Python CLI: ${config.pythonPath} ${cliArgs.join(" ")}`);

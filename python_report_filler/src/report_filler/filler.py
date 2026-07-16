@@ -410,12 +410,25 @@ class ReportFiller:
                 break
 
         if not has_invalid:
+            logger.debug("[validGrid] 全部有效 → 返回 None")
             return None
 
-        return [
+        valid_grid = [
             [is_cell_valid(row_data.get(h, "")) for h in dt.headers]
             for row_data in dt.rows
         ]
+
+        # 调试：打印前3行的 valid_grid 摘要
+        sample_count = min(3, len(valid_grid))
+        for i in range(sample_count):
+            flags = valid_grid[i]
+            invalid_cols = [dt.headers[j] for j, f in enumerate(flags) if not f]
+            logger.debug(
+                "[validGrid] row[%d] 序号=%s: valid=%s invalidCols=%s",
+                i, dt.rows[i].get("序号", "?"), flags, invalid_cols,
+            )
+
+        return valid_grid
 
     # ============================================================
     # 校验 — 对应 TS validateFilledDocument

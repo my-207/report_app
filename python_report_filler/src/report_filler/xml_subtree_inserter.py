@@ -266,6 +266,8 @@ class XmlSubtreeInserter:
         rows_filled = 0
 
         template_row = template_data_rows[0] if template_data_rows else None
+        # 保存原始模板行的深拷贝，避免后续克隆时使用已被原地修改污染的行
+        pristine_template_row = copy.deepcopy(template_row) if template_row is not None else None
 
         for i in range(max(len(template_data_rows), len(data_rows))):
             row_valid_flags = valid_grid[i] if valid_grid and i < len(valid_grid) else None
@@ -281,10 +283,10 @@ class XmlSubtreeInserter:
                 # 源无更多数据 → 保留模板空行原样
                 filled_data_rows.append(template_data_rows[i])
             else:
-                # 源数据超出模板行数 → 克隆模板第一行
-                if template_row is None:
+                # 源数据超出模板行数 → 克隆原始模板第一行（深拷贝，避免已被填充污染）
+                if pristine_template_row is None:
                     break
-                cloned = _clean_vmerge_from_row(template_row)
+                cloned = _clean_vmerge_from_row(pristine_template_row)
                 filled = self._fill_row_with_data(cloned, data_headers, data_rows[i],
                     valid_flags=row_valid_flags)
                 filled_data_rows.append(filled)
@@ -360,6 +362,12 @@ class XmlSubtreeInserter:
         # 紧凑格式：data.length < logicalCol
         if data_keys and len(data_keys) < len(logical_to_physical):
             # 紧凑格式：从后往前填
+            logger.debug(
+                "[紧凑格式] row=%s logicalCols=%d dataKeys=%d validFlags=%s",
+                data.get("序号", "?"), len(logical_to_physical),
+                len(data_keys),
+                valid_flags if valid_flags else "None",
+            )
             fillable_count = sum(
                 1 for c in cells if not is_vmerge_continue(c)
             )
@@ -388,10 +396,21 @@ class XmlSubtreeInserter:
                         is_invalid = not valid_flags[current_data_idx]
                     elif not is_cell_valid(raw_value):
                         is_invalid = True
+                    logger.debug(
+                        "  [紧凑] physIdx=%d dataIdx=%d header=%s value=%s valid=%s highlight=%s",
+                        phys_idx, current_data_idx, header, str(value),
+                        is_cell_valid(raw_value), is_invalid,
+                    )
                     inject_text_into_cell(cells[phys_idx], str(value), highlight=is_invalid)
                 processed_phys.add(phys_idx)
         else:
             # 展开格式：data[li] 对应逻辑列 li
+            logger.debug(
+                "[展开格式] row=%s logicalCols=%d headers=%d validFlags=%s",
+                data.get("序号", "?"), len(logical_to_physical),
+                len(headers),
+                valid_flags if valid_flags else "None",
+            )
             for li in range(len(logical_to_physical) - 1, -1, -1):
                 if li >= len(headers):
                     continue
@@ -410,6 +429,11 @@ class XmlSubtreeInserter:
                     is_invalid = not valid_flags[li]
                 elif not is_cell_valid(raw_value):
                     is_invalid = True
+                logger.debug(
+                    "  [展开] physIdx=%d li=%d header=%s value=%s valid=%s highlight=%s",
+                    phys_idx, li, header, str(value),
+                    is_cell_valid(raw_value), is_invalid,
+                )
                 inject_text_into_cell(cells[phys_idx], str(value), highlight=is_invalid)
                 processed_phys.add(phys_idx)
 
