@@ -153,8 +153,16 @@ class XmlSubtreeInserter:
         data_headers = source_table.get("headers", [])
         data_rows = source_table.get("rows", [])
         if not data_rows:
-            logger.info("源表格无数据行，跳过填充")
-            return 0
+            # 无数据行但有签名数据时，仍需处理签名行
+            if signature_block and (
+                signature_block.inspector_name or signature_block.inspector_date
+                or signature_block.checker_name or signature_block.checker_date
+                or signature_block.reviewer_name or signature_block.reviewer_date
+            ):
+                logger.info("源表格无数据行，但签名数据存在，继续处理签名行")
+            else:
+                logger.info("源表格无数据行，跳过填充")
+                return 0
 
         # 3. 提取模板所有行 — 对应 TS extractAllRows
         target_rows = _extract_all_rows(target_table)
@@ -297,8 +305,11 @@ class XmlSubtreeInserter:
         if has_signature_row and signature_template is not None:
             if signature_block and (
                 signature_block.inspector_name
+                or signature_block.inspector_date
                 or signature_block.checker_name
+                or signature_block.checker_date
                 or signature_block.reviewer_name
+                or signature_block.reviewer_date
             ):
                 filled_signature = self._fill_signature_row_direct(
                     signature_template, signature_block
